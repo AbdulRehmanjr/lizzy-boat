@@ -3,8 +3,8 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
-import { TRPCReactProvider } from "~/trpc/react";
 import Header from "~/components/general/Header";
+import Providers from "./provider";
 
 export const metadata: Metadata = {
   title: "Lizzy Boat",
@@ -18,10 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-        <TRPCReactProvider>
+        <Providers>
           <Header />
           <main>{children}</main>
-        </TRPCReactProvider>
+        </Providers>
       </body>
     </html>
   );
