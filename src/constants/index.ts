@@ -17,17 +17,17 @@ export const tourCards: TourCardProps[] = [
     text: "Fishing",
   },
   {
-    link: "/private-charter",
+    link: "/charter",
     image: "/card-images/boat.png",
     text: "Private Charter",
   },
   {
-    link: "/private-transfer",
+    link: "/transfer",
     image: "/card-images/boat.png",
     text: "Private Transfer",
   },
   {
-    link: "/sunset-tour",
+    link: "/sunset",
     image: "/card-images/boat1.jpg",
     text: "Sunset Tour",
   },
