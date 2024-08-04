@@ -3,16 +3,20 @@ import { cn } from "~/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-black text-white shadow hover:bg-black/90",
-        destructive: "bg-red-600 text-white shadow-sm hover:bg-red-600/90",
+        default:
+          "bg-white/30 backdrop-blur-md text-white shadow hover:bg-white/40 focus:bg-white/50 active:bg-white/60",
+        destructive:
+          "bg-red-600/30 backdrop-blur-md text-white shadow-sm hover:bg-red-600/40 focus:bg-red-600/50 active:bg-red-600/60",
         outline:
-          "border border-gray-200 bg-white text-black shadow-sm hover:bg-gray-100",
-        secondary: "bg-gray-700 text-white shadow-sm hover:bg-gray-700/80",
-        ghost: "hover:bg-gray-100 text-black",
+          "border border-white/30 backdrop-blur-md text-white shadow-sm hover:bg-white/40 focus:bg-white/50 active:bg-white/60",
+        secondary:
+          "bg-gray-700/30 backdrop-blur-md text-white shadow-sm hover:bg-gray-700/40 focus:bg-gray-700/50 active:bg-gray-700/60",
+        ghost:
+          "bg-transparent backdrop-blur-sm text-white hover:bg-white/10 focus:bg-white/20 active:bg-white/30",
         link: "text-blue-600 underline-offset-4 hover:underline",
       },
       size: {

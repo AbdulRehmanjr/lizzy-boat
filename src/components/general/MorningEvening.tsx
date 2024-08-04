@@ -12,12 +12,12 @@ type Props = {
 const MorningEvening = ({ state, setState, linkToRedirect }: Props) => {
   const router = useRouter();
   return (
-    <menu className="grid grid-rows-2 gap-4 text-center md:grid-flow-row md:grid-cols-2 md:grid-rows-1">
+    <menu className="grid grid-rows-2 gap-4 text-center md:grid-flow-row md:grid-cols-2 md:grid-rows-1 text-white">
       <li
         className={clsx(
-          "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg border-2 p-5 text-lg shadow-md md:w-[400px] md:text-2xl border-black hover:bg-black hover:text-white",
+          "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg border-[0.5px] border-gray-300 p-5 text-lg backdrop-blur md:w-[400px] md:text-2xl hover:shadow-md hover:shadow-white",
           {
-            "bg-black text-white":
+            "text-white shadow-md shadow-white":
               state.timeSlot && state.timeSlot === "morning",
           },
         )}
@@ -31,9 +31,9 @@ const MorningEvening = ({ state, setState, linkToRedirect }: Props) => {
       </li>
       <li
         className={clsx(
-          "full-day flex h-[300px] w-[350px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-black p-5 text-lg shadow-md md:w-[400px] md:text-2xl hover:bg-black hover:text-white",
+          "full-day flex h-[300px] w-[350px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-[0.5px] border-gray-300 p-5 text-lg hover:shadow-md hover:shadow-white md:w-[400px] md:text-2xl backdrop-blur",
           {
-            "bg-black text-white":
+            "text-white shadow-md shadow-white":
               state.timeSlot && state.timeSlot === "afternoon",
           },
         )}

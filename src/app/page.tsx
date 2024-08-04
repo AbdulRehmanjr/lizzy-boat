@@ -8,7 +8,7 @@ import { cn } from "~/lib/utils";
 export default async function Home() {
   return (
     <section className="flex flex-col items-center justify-center gap-4">
-      <h1 className={`text-2xl font-bold md:text-4xl`}>Explore Your Journey</h1>
+      <h1 className={`text-2xl text-white font-bold md:text-4xl`}>Explore Your Journey</h1>
       <menu className="grid grid-cols-2 grid-rows-3 gap-4 p-10">
         {tourCards.map((card, index) => (
           <TourCard
