@@ -95,11 +95,13 @@ export const PayPalButton = ({ state, setState, apiLinkEndpoint }: Props) => {
   };
 
   return (
-    <PayPalButtons
-      disabled={isDisable || !isReady}
-      createOrder={(data, _action) => createOrder(data)}
-      onApprove={(data, _actions) => approveOrder(data)}
-      onCancel={(data, _action) => cancelOrder(data)}
-    />
+    <>
+      <PayPalButtons
+        disabled={isDisable || !isReady}
+        createOrder={(data, _action) => createOrder(data)}
+        onApprove={(data, _actions) => approveOrder(data)}
+        onCancel={(data, _action) => cancelOrder(data)}
+      />
+    </>
   );
 };

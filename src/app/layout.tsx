@@ -17,10 +17,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
-      <body>
+      <body className="grid">
         <Providers>
           <Header />
-          <main className="min-h-[calc(100vh_-_65px)]">{children}</main>
+          <main className="min-h-[calc(100vh_-_55px)] flex items-center justify-center">{children}</main>
         </Providers>
       </body>
     </html>

@@ -68,12 +68,12 @@ const formInitial: FormProps = {
     guesthouse: 'none'
 }
 
-export const FormAtom = atomWithStorage('LadyForm', formInitial)
-export const SnorkelingAtom = atomWithStorage('LadySnorkelingBoat', snorkeingInitial)
-export const PrivateAtom = atomWithStorage('LadyPrivateBoat', privateInitial)
-export const SunsetAtom = atomWithStorage('LadySunsetBoat', sunsetInitial)
-export const TransferAtom = atomWithStorage('LadyTransferBoat', transferInitial)
-export const FishingAtom = atomWithStorage('LadyFishingBoat', fishingInitial)
-export const BoatBookingAtom = atomWithStorage('LadyBoatBooking', boatInitial)
-export const PayPalDisbaleAtom = atomWithStorage<boolean>('LadyPayPalAtom', true)
-export const PayPalIdAtom = atomWithStorage<string>('LadyPayPalId', '')
+export const FormAtom = atomWithStorage('LizzyForm', formInitial)
+export const SnorkelingAtom = atomWithStorage('LizzySnorkelingBoat', snorkeingInitial)
+export const PrivateAtom = atomWithStorage('LizzyPrivateBoat', privateInitial)
+export const SunsetAtom = atomWithStorage('LizzySunsetBoat', sunsetInitial)
+export const TransferAtom = atomWithStorage('LizzyTransferBoat', transferInitial)
+export const FishingAtom = atomWithStorage('LizzyFishingBoat', fishingInitial)
+export const BoatBookingAtom = atomWithStorage('LizzyBoatBooking', boatInitial)
+export const PayPalDisbaleAtom = atomWithStorage<boolean>('LizzyPayPalAtom', true)
+export const PayPalIdAtom = atomWithStorage<string>('LizzyPayPalId', '')

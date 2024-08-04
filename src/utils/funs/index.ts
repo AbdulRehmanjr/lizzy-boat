@@ -1,6 +1,6 @@
 
 export const clearLocalStorage = ()=>{
-    localStorage.removeItem('LadyBoatBooking')
-    localStorage.removeItem('LadyPayPalAtom')
-    localStorage.removeItem('LadyPayPalId')
+    localStorage.removeItem('LizzyBoatBooking')
+    localStorage.removeItem('LizzyPayPalAtom')
+    localStorage.removeItem('LizzyPayPalId')
 }

@@ -8,7 +8,7 @@ import { SnorkelingAtom } from "~/utils/stores";
 import { api } from "~/trpc/react";
 import { Button } from "../general/Button";
 
-export const Calendar = () => {
+export const SnorkelingCalendar = () => {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
   const [bookingDate, setBookingDate] = useState<Dayjs>();
@@ -82,7 +82,7 @@ export const Calendar = () => {
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-primary text-white hover:bg-primary hover:text-primary [&_span]:text-white"}`}
+          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-black text-white hover:bg-black hover:text-white [&_span]:text-white"}`}
           disabled={isPast || isBlock || isReserved}
           onClick={() => {
             setBookingDate(() => date);
@@ -95,7 +95,7 @@ export const Calendar = () => {
         >
           <p className={`flex flex-col gap-1`}>
             <span
-              className={`font-bold ${isPast || isBlock ? "text-gray-400" : "text-primary"}`}
+              className={`font-bold ${isPast || isBlock ? "text-gray-400" : "text-black"}`}
             >
               {date.date()}
             </span>

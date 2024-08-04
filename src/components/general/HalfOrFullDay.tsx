@@ -22,13 +22,17 @@ const HalfOrFullDay = ({
 }: Props) => {
   const router = useRouter();
   return (
-    <menu className="grid grid-rows-2 gap-4 md:grid-flow-row md:grid-cols-2 md:grid-rows-1">
+    <menu className="grid grid-rows-2 gap-4 text-center md:grid-flow-row md:grid-cols-2 md:grid-rows-1">
       <li
         className={clsx(
-          "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg border-2 bg-black p-5 text-lg text-white shadow-md md:w-[400px] md:text-2xl",
+          "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg border-2 border-black p-5 text-lg shadow-md hover:bg-black hover:text-white md:w-[400px] md:text-2xl",
+          {
+            "bg-black text-white":
+              state.daySlot && state.daySlot === "half_day",
+          },
         )}
         onClick={() => {
-          setState(() => ({ ...state, daySlot: "half_day" }));
+          setState((prev: BookingProps) => ({ ...prev, daySlot: "half_day" }));
           router.push(linkIfHalfDay);
         }}
       >
@@ -37,7 +41,11 @@ const HalfOrFullDay = ({
       </li>
       <li
         className={clsx(
-          "full-day flex h-[300px] w-[350px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-black p-5 text-lg shadow-md md:w-[400px] md:text-2xl",
+          "full-day flex h-[300px] w-[350px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-black p-5 text-lg shadow-md hover:bg-black hover:text-white md:w-[400px] md:text-2xl",
+          {
+            "bg-black text-white":
+              state.daySlot && state.daySlot === "full_day",
+          },
         )}
         onClick={() => {
           setState(() => ({ ...state, daySlot: "full_day" }));

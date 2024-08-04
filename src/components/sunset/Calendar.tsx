@@ -52,7 +52,7 @@ export const Calendar = () => {
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-primary text-white hover:bg-primary hover:text-primary [&_span]:text-white"}`}
+          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-black text-white hover:bg-black hover:text-white [&_span]:text-white"}`}
           disabled={isPast}
           onClick={() => {
             setBookingDate(() => date);

@@ -15,10 +15,14 @@ const MorningEvening = ({ state, setState, linkToRedirect }: Props) => {
     <menu className="grid grid-rows-2 gap-4 text-center md:grid-flow-row md:grid-cols-2 md:grid-rows-1">
       <li
         className={clsx(
-          "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg border-2 bg-black p-5 text-lg text-white shadow-md md:w-[400px] md:text-2xl",
+          "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg border-2 p-5 text-lg shadow-md md:w-[400px] md:text-2xl border-black hover:bg-black hover:text-white",
+          {
+            "bg-black text-white":
+              state.timeSlot && state.timeSlot === "morning",
+          },
         )}
         onClick={() => {
-          setState({ ...state, timeSlot: "morning" });
+          setState((prev: BookingProps) => ({ ...prev, timeSlot: "morning" }));
           router.push(linkToRedirect);
         }}
       >
@@ -27,10 +31,17 @@ const MorningEvening = ({ state, setState, linkToRedirect }: Props) => {
       </li>
       <li
         className={clsx(
-          "full-day flex h-[300px] w-[350px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-black p-5 text-lg shadow-md md:w-[400px] md:text-2xl",
+          "full-day flex h-[300px] w-[350px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-black p-5 text-lg shadow-md md:w-[400px] md:text-2xl hover:bg-black hover:text-white",
+          {
+            "bg-black text-white":
+              state.timeSlot && state.timeSlot === "afternoon",
+          },
         )}
         onClick={() => {
-          setState({ ...state, timeSlot: "afternoon" });
+          setState((prev: BookingProps) => ({
+            ...prev,
+            timeSlot: "afternoon",
+          }));
           router.push(linkToRedirect);
         }}
       >

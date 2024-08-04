@@ -4,8 +4,9 @@ import dayjs, { type Dayjs } from "dayjs";
 import { useSetAtom } from "jotai/react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { Button } from "~/components/ui/button";
 import { TransferAtom } from "~/utils/stores";
+import { Button } from "../general/Button";
+import clsx from "clsx";
 
 export const Calendar = () => {
   const router = useRouter();
@@ -48,11 +49,11 @@ export const Calendar = () => {
     const price = 100;
 
     return (
-      <td className="relative h-[3rem] w-[1.5rem] border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]">
+      <td className={clsx("relative h-[3rem] w-[1.5rem] border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]")}>
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-primary text-white hover:bg-primary hover:text-primary [&_span]:text-white"}`}
+          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-black text-white hover:bg-black hover:text-white [&_span]:text-white"}`}
           disabled={isPast}
           onClick={() => {
             setBookingDate(() => date);
@@ -65,7 +66,7 @@ export const Calendar = () => {
         >
           <p className={`flex flex-col gap-1`}>
             <span
-              className={`font-bold ${isPast ? "text-gray-400" : "text-primary"}`}
+              className={`font-bold ${isPast ? "text-gray-400" : "text-black"}`}
             >
               {date.date()}
             </span>
@@ -119,7 +120,7 @@ export const Calendar = () => {
       {bookingDate && (
         <Button
           type="button"
-          onClick={() => router.push("/transfer/booking-time")}
+          onClick={() => router.push("/transfer/booking-form")}
         >
           Continue
         </Button>

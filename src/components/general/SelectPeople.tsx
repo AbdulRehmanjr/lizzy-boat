@@ -17,7 +17,7 @@ const SelectPeople = ({ state, setState, linkToRedirect }: Props) => {
       <div className="grid items-center gap-6">
         <li
           className={clsx(
-            "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg border-2 bg-black p-5 text-center text-lg text-white shadow-md md:w-[400px] md:text-2xl",
+            "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg border-2 border-black p-5 text-center text-lg shadow-md md:w-[400px] md:text-2xl",
           )}
         >
           <h4 className="text-4xl md:text-5xl">Adults</h4>
@@ -25,7 +25,7 @@ const SelectPeople = ({ state, setState, linkToRedirect }: Props) => {
         </li>
         <div className="grid grid-cols-3 grid-rows-1 place-items-center gap-3 px-6">
           <Button
-            disabled={state.adult === 0}
+            disabled={state.adult === 0 || state.adult === undefined}
             onClick={() => {
               setState({
                 ...state,

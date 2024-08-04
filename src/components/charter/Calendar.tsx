@@ -23,7 +23,6 @@ export const Calendar = () => {
     const currentMonth = currentDate || dayjs();
     const firstDay = currentMonth.clone().startOf("month").day();
     const daysInMonth = currentMonth.daysInMonth();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const emptyDaysBefore: Dayjs[] = Array(firstDay).fill(null);
     const currentMonthDays: Dayjs[] = Array.from(
       { length: daysInMonth },
@@ -67,21 +66,23 @@ export const Calendar = () => {
   };
 
   const DateTemplate = ({ date }: { date: Dayjs }) => {
-    if (!date) return <td className="border-[1px] border-gray-600"></td>;
+    if (!date) return <td className="border-[1px] border-black"></td>;
 
     const isPast = date.isBefore(dayjs(), "day");
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const isBlock = isBlocked(date);
     const isReserved = bookingBlock.data?.some(
       (blockDate) => date.format("YYYY-MM-DD") === blockDate.date,
     );
 
     return (
-      <td className="relative h-[3rem] w-[1.5rem] border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]">
+      <td className="relative h-[3rem] w-[1.5rem] border-[1px] border-black md:h-[6rem] md:w-[2rem]">
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-primary text-white hover:bg-primary hover:text-primary [&_span]:text-white"}`}
+          className={`absolute left-0 top-0 h-full w-full ${
+            bookingDate?.isSame(date) &&
+            "bg-black text-white hover:bg-black hover:text-white [&_span]:text-white"
+          }`}
           disabled={isPast || isBlock || isReserved}
           onClick={() => {
             setBookingDate(() => date);
@@ -94,7 +95,9 @@ export const Calendar = () => {
         >
           <p className={`flex flex-col gap-1`}>
             <span
-              className={`font-bold ${isPast || isBlock ? "text-gray-400" : "text-primary"}`}
+              className={`font-bold ${
+                isPast || isBlock ? "text-gray-400" : "text-black"
+              }`}
             >
               {date.date()}
             </span>
@@ -152,7 +155,7 @@ export const Calendar = () => {
       {bookingDate && (
         <Button
           type="button"
-          onClick={() => router.push("/private/booking-form")}
+          onClick={() => router.push("/charter/booking-form")}
         >
           Continue
         </Button>
