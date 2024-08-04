@@ -20,7 +20,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <Header />
-          <main>{children}</main>
+          <main className="min-h-[calc(100vh_-_65px)]">{children}</main>
         </Providers>
       </body>
     </html>
