@@ -25,7 +25,7 @@ const HalfOrFullDay = ({
     <menu className="grid grid-rows-2 gap-4 text-center md:grid-flow-row md:grid-cols-2 md:grid-rows-1">
       <li
         className={clsx(
-          "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg  p-5 text-lg hover:shadow-md text-white hover:text-white md:w-[400px] md:text-2xl backdrop-blur hover:shadow-white",
+          "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg  p-5 text-lg hover:shadow-md text-white hover:text-white md:w-[400px] md:text-2xl backdrop-blur hover:shadow-white border-[0.5px] border-gray-300",
           {
             "text-white shadow-white shadow-md":
               state.daySlot && state.daySlot === "half_day",
@@ -41,7 +41,7 @@ const HalfOrFullDay = ({
       </li>
       <li
         className={clsx(
-          "full-day flex h-[300px] w-[350px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg  p-5 text-lg hover:shadow-md text-white  hover:text-white md:w-[400px] md:text-2xl backdrop-blur hover:shadow-white",
+          "full-day flex h-[300px] w-[350px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg  p-5 text-lg hover:shadow-md text-white  hover:text-white md:w-[400px] md:text-2xl backdrop-blur hover:shadow-white border-[0.5px] border-gray-300",
           {
             "text-white shadow-white shadow-md":
               state.daySlot && state.daySlot === "full_day",

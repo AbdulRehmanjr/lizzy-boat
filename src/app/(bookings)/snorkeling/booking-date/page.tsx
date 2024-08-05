@@ -1,7 +1,6 @@
 "use client";
 import { useAtom } from "jotai/react";
-import React from "react";
-import { Button } from "~/components/general/Button";
+import React from "react"; 
 import { Calendar } from "~/components/snorkeling/Calendar";
 import { SnorkelingAtom } from "~/utils/stores";
 
@@ -12,11 +11,7 @@ const BookingDate = (props: Props) => {
 
   return (
     <>
-      <p>Calendar</p>
       <Calendar
-        // state={snorkeling}
-        // setState={setSnorkeling}
-        // bookingType="snorkeling"
       />
     </>
   );

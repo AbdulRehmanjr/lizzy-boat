@@ -4,8 +4,8 @@ import dayjs, { type Dayjs } from "dayjs";
 import { useAtom } from "jotai/react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { Button } from "~/components/ui/button";
 import { SunsetAtom } from "~/utils/stores";
+import { Button } from "../general/Button";
 
 export const Calendar = () => {
   const router = useRouter();
@@ -47,13 +47,18 @@ export const Calendar = () => {
     const isPast = date.isBefore(dayjs(), "day");
     const price = sunsetData.adult <= 4 ? 100 : 100 + sunsetData.adult * 30;
 
+    // Check for hours left
+    const now = dayjs();
+    const hoursLeft = date.diff(now, "hour");
+    const isLessThan12Hours = hoursLeft < 12;
+
     return (
       <td className="relative h-[3rem] w-[1.5rem] border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]">
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-black text-white hover:bg-black hover:text-white [&_span]:text-white"}`}
-          disabled={isPast}
+          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-white/60 text-white hover:bg-white/60 hover:text-white [&_span]:text-white"}`}
+          disabled={isPast || isLessThan12Hours}
           onClick={() => {
             setBookingDate(() => date);
             setSunsetData((prev) => ({
@@ -65,11 +70,15 @@ export const Calendar = () => {
         >
           <p className={`flex flex-col gap-1`}>
             <span
-              className={`font-bold ${isPast ? "text-gray-400" : "text-primary"}`}
+              className={`font-bold ${isPast ? "text-gray-400" : "text-white"}`}
             >
               {date.date()}
             </span>
-            {!isPast ? <span>{price} €</span> : <span>N/A</span>}
+            {!isPast && !isLessThan12Hours ? (
+              <span>{price} €</span>
+            ) : (
+              <span>N/A</span>
+            )}
           </p>
         </Button>
       </td>

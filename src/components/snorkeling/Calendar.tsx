@@ -8,7 +8,7 @@ import { SnorkelingAtom } from "~/utils/stores";
 import { api } from "~/trpc/react";
 import { Button } from "../general/Button";
 
-export const SnorkelingCalendar = () => {
+export const Calendar = () => {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
   const [bookingDate, setBookingDate] = useState<Dayjs>();
@@ -67,6 +67,17 @@ export const SnorkelingCalendar = () => {
     return false;
   };
 
+  const isBookingTimeOver = (date: Dayjs): boolean => {
+    const now = dayjs();
+    const hoursLeft = date.diff(now, "hour");
+    if (snorkeling.daySlot === "full_day") {
+      return hoursLeft < 12;
+    } else if (snorkeling.daySlot === "half_day") {
+      return hoursLeft < 6;
+    }
+    return true;
+  };
+
   const DateTemplate = ({ date }: { date: Dayjs }) => {
     if (!date) return <td className="border-[1px] border-gray-600"></td>;
 
@@ -77,13 +88,15 @@ export const SnorkelingCalendar = () => {
       (blockDate) => date.format("YYYY-MM-DD") === blockDate,
     );
 
+    const isTimeOver = isBookingTimeOver(date);
+
     return (
       <td className="relative h-[3rem] w-[1.5rem] border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]">
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-black text-white hover:bg-black hover:text-white [&_span]:text-white"}`}
-          disabled={isPast || isBlock || isReserved}
+          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-white/60 text-white hover:bg-white/60 hover:text-white [&_span]:text-white"}`}
+          disabled={isPast || isBlock || isReserved || isTimeOver}
           onClick={() => {
             setBookingDate(() => date);
             setSnorkeling((prev) => ({
@@ -95,11 +108,11 @@ export const SnorkelingCalendar = () => {
         >
           <p className={`flex flex-col gap-1`}>
             <span
-              className={`font-bold ${isPast || isBlock ? "text-gray-400" : "text-black"}`}
+              className={`font-bold ${isPast || isBlock ? "text-gray-400" : "text-white"}`}
             >
               {date.date()}
             </span>
-            {!isPast && !isBlock && !isReserved ? (
+            {!isPast && !isBlock && !isReserved && !isTimeOver ? (
               <span>{currentPrice} €</span>
             ) : (
               <span>N/A</span>

@@ -4,9 +4,9 @@ import dayjs, { type Dayjs } from "dayjs";
 import { useAtom } from "jotai/react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { Button } from "~/components/ui/button";
 import { PrivateAtom } from "~/utils/stores";
 import { api } from "~/trpc/react";
+import { Button } from "../general/Button";
 
 export const Calendar = () => {
   const router = useRouter();
@@ -58,6 +58,16 @@ export const Calendar = () => {
     setCurrentDate(newDate.clone().add(1, "month"));
   };
 
+  const isBookingTimeOver = (date: Dayjs): boolean => {
+    const now = dayjs();
+    const hoursLeft = date.diff(now, "hour");
+    if (privateData.daySlot === "full_day") {
+      return hoursLeft < 12;
+    } else if (privateData.daySlot === "half_day") {
+      return hoursLeft < 6;
+    }
+    return true;
+  };
   const isBlocked = (date: Dayjs): boolean => {
     const dayOfWeek = date.day();
     if (privateData.daySlot == "full_day")
@@ -74,6 +84,8 @@ export const Calendar = () => {
       (blockDate) => date.format("YYYY-MM-DD") === blockDate.date,
     );
 
+    const isTimeOver = isBookingTimeOver(date);
+
     return (
       <td className="relative h-[3rem] w-[1.5rem] border-[1px] border-black md:h-[6rem] md:w-[2rem]">
         <Button
@@ -81,9 +93,9 @@ export const Calendar = () => {
           type="button"
           className={`absolute left-0 top-0 h-full w-full ${
             bookingDate?.isSame(date) &&
-            "bg-black text-white hover:bg-black hover:text-white [&_span]:text-white"
+            "bg-white/60 text-white hover:bg-white/60 hover:text-white [&_span]:text-white"
           }`}
-          disabled={isPast || isBlock || isReserved}
+          disabled={isPast || isBlock || isReserved || isTimeOver}
           onClick={() => {
             setBookingDate(() => date);
             setFishingData((prev) => ({
@@ -96,12 +108,12 @@ export const Calendar = () => {
           <p className={`flex flex-col gap-1`}>
             <span
               className={`font-bold ${
-                isPast || isBlock ? "text-gray-400" : "text-black"
+                isPast || isBlock ? "text-gray-400" : "text-white"
               }`}
             >
               {date.date()}
             </span>
-            {!isPast && !isBlock && !isReserved ? (
+            {!isPast && !isBlock && !isReserved && !isTimeOver ? (
               <span>{currentPrice} €</span>
             ) : (
               <span>N/A</span>
