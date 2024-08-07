@@ -29,9 +29,8 @@ const formSchema = z.object({
   additional: z.optional(z.string({ required_error: "Field is required." })),
   info: z.optional(z.string({ required_error: "Field is required." })),
 });
-type Props = {};
 
-const BookingForm = (props: Props) => {
+const BookingForm = () => {
   const setBookingId = useSetAtom(PayPalIdAtom);
   const setTrigger = useSetAtom(PayPalDisbaleAtom);
   const setFormData = useSetAtom(FormAtom);
@@ -67,7 +66,7 @@ const BookingForm = (props: Props) => {
         onSubmit={form.handleSubmit(formSubmitted)}
         className={`text-mid-blue grid grid-cols-2 gap-3`}
       >
-        <h1 className="font-ibm text-yellow col-span-2 text-4xl">
+        <h1 className="font-ibm col-span-2 text-4xl">
           Personal Information
         </h1>
         <FormField

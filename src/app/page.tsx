@@ -1,14 +1,11 @@
 import clsx from "clsx";
-import Link from "next/link";
 import TourCard from "~/components/cards/TourCard";
 import { tourCards } from "~/constants";
-import { cn } from "~/lib/utils";
-// import { HydrateClient } from "~/trpc/server";
 
 export default async function Home() {
   return (
     <section className="flex flex-col items-center justify-center gap-4">
-      <h1 className={`text-2xl text-white font-bold md:text-4xl`}>Explore Your Journey</h1>
+      <h1 className={`text-2xl font-bold md:text-4xl text-[#1f788b]`}>Explore Your Journey</h1>
       <menu className="grid grid-cols-2 grid-rows-3 gap-4 p-10">
         {tourCards.map((card, index) => (
           <TourCard

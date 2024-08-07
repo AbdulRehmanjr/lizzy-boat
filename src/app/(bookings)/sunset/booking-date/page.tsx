@@ -1,9 +1,8 @@
 import React from "react";
 import { Calendar } from "~/components/sunset/Calendar";
 
-type Props = {};
 
-const BookingDate = (props: Props) => {
+const BookingDate = () => {
   return (
     <>
       <Calendar />

@@ -4,9 +4,8 @@ import React from "react";
 import MorningEvening from "~/components/general/MorningEvening";
 import { PrivateAtom } from "~/utils/stores";
 
-type Props = {};
 
-const BookingTime = (props: Props) => {
+const BookingTime = () => {
   const [privateAtom, setPrivateData] = useAtom(PrivateAtom);
 
   return (

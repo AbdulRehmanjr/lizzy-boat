@@ -5,9 +5,8 @@ import BookingForm from "~/components/general/BookingForm";
 import CheckoutOverview from "~/components/general/CheckoutOverview";
 import { TransferAtom } from "~/utils/stores";
 
-type Props = {};
 
-const TransferBookingForm = (props: Props) => {
+const TransferBookingForm = () => {
   const [transferData, setTransfer] = useAtom(TransferAtom);
   const data = useAtomValue(TransferAtom);
 
@@ -15,7 +14,6 @@ const TransferBookingForm = (props: Props) => {
     <div className="flex flex-col justify-center gap-10 p-6 md:flex-row md:gap-40">
       <BookingForm />
       <CheckoutOverview
-        atom={TransferAtom}
         state={transferData}
         setState={setTransfer}
         apiLinkEndpoint="transfer"

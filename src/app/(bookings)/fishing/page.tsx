@@ -4,9 +4,8 @@ import React from "react";
 import HalfOrFullDay from "~/components/general/HalfOrFullDay";
 import { FishingAtom } from "~/utils/stores";
 
-type Props = {};
 
-const Fishing = (props: Props) => {
+const Fishing = () => {
   const [fishingData, setFishingData] = useAtom(FishingAtom);
   return (
     <>

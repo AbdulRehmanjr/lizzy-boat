@@ -4,9 +4,8 @@ import React from "react";
 import MorningEvening from "~/components/general/MorningEvening";
 import { FishingAtom } from "~/utils/stores";
 
-type Props = {};
 
-const BookingTime = (props: Props) => {
+const BookingTime = () => {
   const [fishingData, setFishingData] = useAtom(FishingAtom);
 
   return (

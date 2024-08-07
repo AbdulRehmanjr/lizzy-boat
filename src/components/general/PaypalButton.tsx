@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useToast } from "~/components/ui/use-toast";
-import { FishingAtom, FormAtom, PayPalDisbaleAtom } from "~/utils/stores";
+import { FormAtom, PayPalDisbaleAtom } from "~/utils/stores";
 import { PayPalIdAtom } from "~/utils/stores";
 import { clearLocalStorage } from "~/utils/funs";
 

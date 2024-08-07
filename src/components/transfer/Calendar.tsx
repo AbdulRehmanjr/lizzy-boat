@@ -43,26 +43,26 @@ export const Calendar = () => {
   };
 
   const DateTemplate = ({ date }: { date: Dayjs }) => {
-    if (!date) return <td className="border-[1px] border-gray-600"></td>;
+    if (!date) return <td className="border-[1px] border-[#1f788b]"></td>;
 
     const isPast = date.isBefore(dayjs(), "day");
     const price = 100;
     //Check for 12 hours
     const now = dayjs();
     const hoursLeft = date.diff(now, "hour");
-    const isLessThan12Hours = hoursLeft < 12;
+    const isLessThan24Hours = hoursLeft < 24;
 
     return (
       <td
         className={clsx(
-          "relative h-[3rem] w-[1.5rem] border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]",
+          "relative h-[3rem] w-[1.5rem] border-[1px] border-[#1f788b] md:h-[6rem] md:w-[2rem]",
         )}
       >
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-white/60 text-white hover:bg-white/60 hover:text-white [&_span]:text-white"}`}
-          disabled={isPast || isLessThan12Hours}
+          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
+          disabled={isPast || isLessThan24Hours}
           onClick={() => {
             setBookingDate(() => date);
             setTransferData((prev) => ({
@@ -73,12 +73,8 @@ export const Calendar = () => {
           }}
         >
           <p className={`flex flex-col gap-1`}>
-            <span
-              className={`font-bold ${isPast ? "text-gray-400" : "text-white"}`}
-            >
-              {date.date()}
-            </span>
-            {!isPast && !isLessThan12Hours ? (
+            <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
+            {!isPast && !isLessThan24Hours ? (
               <span>{price} €</span>
             ) : (
               <span>N/A</span>

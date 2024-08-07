@@ -17,7 +17,7 @@ const SelectPeople = ({ state, setState, linkToRedirect }: Props) => {
       <div className="grid items-center gap-6 text-white">
         <li
           className={clsx(
-            "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg backdrop-blur p-5 text-center text-lg  md:w-[400px] md:text-2xl border-[0.5px] border-gray-300",
+            "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg p-5 text-center text-lg  md:w-[400px] md:text-2xl border-2 border-[#1f788b] text-[#1f788b]",
           )}
         >
           <h4 className="text-4xl md:text-5xl">Adults</h4>
@@ -35,7 +35,7 @@ const SelectPeople = ({ state, setState, linkToRedirect }: Props) => {
           >
             <Minus />
           </Button>
-          <p className="text-3xl">{state.adult ?? 0}</p>
+          <p className="text-3xl text-[#1f788b]">{state.adult ?? 0}</p>
           <Button
             onClick={() => {
               setState({
@@ -48,10 +48,10 @@ const SelectPeople = ({ state, setState, linkToRedirect }: Props) => {
           </Button>
         </div>
       </div>
-      <div className="grid gap-6 text-white">
+      <div className="grid gap-6">
         <li
           className={clsx(
-            "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg border-[0.5px] border-gray-300 p-5 text-center text-lg shadow-md md:w-[400px] md:text-2xl backdrop-blur",
+            "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg p-5 text-center text-lg  md:w-[400px] md:text-2xl border-2 border-[#1f788b] text-[#1f788b]",
           )}
         >
           <h4 className="text-4xl md:text-5xl">Infants</h4>
@@ -69,7 +69,7 @@ const SelectPeople = ({ state, setState, linkToRedirect }: Props) => {
           >
             <Minus />
           </Button>
-          <p className="text-3xl">{state.infants}</p>
+          <p className="text-3xl text-[#1f788b]">{state.infants}</p>
           <Button
             onClick={() => {
               setState({

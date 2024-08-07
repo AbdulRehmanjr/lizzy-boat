@@ -21,7 +21,7 @@ export const Calendar = () => {
   });
 
   const currentMonth: Dayjs[][] = useMemo(() => {
-    const currentMonth = currentDate || dayjs();
+    const currentMonth = currentDate ?? dayjs();
     const firstDay = currentMonth.clone().startOf("month").day();
     const daysInMonth = currentMonth.daysInMonth();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -51,19 +51,19 @@ export const Calendar = () => {
   }, [snorkeling.adult, snorkeling.daySlot]);
 
   const handlePreviousMonth = () => {
-    const newDate = currentDate || dayjs();
+    const newDate = currentDate ?? dayjs();
     setCurrentDate(newDate.clone().subtract(1, "month"));
   };
 
   const handleNextMonth = () => {
-    const newDate = currentDate || dayjs();
+    const newDate = currentDate ?? dayjs();
     setCurrentDate(newDate.clone().add(1, "month"));
   };
 
   const isBlocked = (date: Dayjs): boolean => {
-    const dayOfWeek = date.day();
-    if (snorkeling.daySlot == "full_day")
-      return dayOfWeek === 0 || dayOfWeek === 6;
+    // const dayOfWeek = date.day();
+    if (snorkeling.daySlot == "full_day") return false;
+    // return dayOfWeek === 0 ?? dayOfWeek === 6;
     return false;
   };
 
@@ -73,13 +73,17 @@ export const Calendar = () => {
     if (snorkeling.daySlot === "full_day") {
       return hoursLeft < 12;
     } else if (snorkeling.daySlot === "half_day") {
-      return hoursLeft < 6;
+      if (snorkeling.timeSlot === "morning") {
+        return hoursLeft < 1;
+      } else {
+        return false;
+      }
     }
     return true;
   };
 
   const DateTemplate = ({ date }: { date: Dayjs }) => {
-    if (!date) return <td className="border-[1px] border-gray-600"></td>;
+    if (!date) return <td className="border-[1px] border-[#1f788b]"></td>;
 
     const isPast = date.isBefore(dayjs(), "day");
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -91,11 +95,11 @@ export const Calendar = () => {
     const isTimeOver = isBookingTimeOver(date);
 
     return (
-      <td className="relative h-[3rem] w-[1.5rem] border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]">
+      <td className="relative h-[3rem] w-[1.5rem] border-[1px] border-[#1f788b] md:h-[6rem] md:w-[2rem]">
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-white/60 text-white hover:bg-white/60 hover:text-white [&_span]:text-white"}`}
+          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
           disabled={isPast || isBlock || isReserved || isTimeOver}
           onClick={() => {
             setBookingDate(() => date);
@@ -107,9 +111,7 @@ export const Calendar = () => {
           }}
         >
           <p className={`flex flex-col gap-1`}>
-            <span
-              className={`font-bold ${isPast || isBlock ? "text-gray-400" : "text-white"}`}
-            >
+            <span className={`text-gray-400" : "text-[#1f788b] font-bold`}>
               {date.date()}
             </span>
             {!isPast && !isBlock && !isReserved && !isTimeOver ? (
