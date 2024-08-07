@@ -5,9 +5,8 @@ import BookingForm from "~/components/general/BookingForm";
 import CheckoutOverview from "~/components/general/CheckoutOverview";
 import { SunsetAtom } from "~/utils/stores";
 
-type Props = {};
 
-const SunsetBookingForm = (props: Props) => {
+const SunsetBookingForm = () => {
   const [sunsetData, setSunsetData] = useAtom(SunsetAtom);
   const data = useAtomValue(SunsetAtom);
 
@@ -15,7 +14,6 @@ const SunsetBookingForm = (props: Props) => {
     <div className="flex flex-col justify-center gap-10 p-6 md:flex-row md:gap-40">
       <BookingForm />
       <CheckoutOverview
-        atom={SunsetAtom}
         state={sunsetData}
         setState={setSunsetData}
         apiLinkEndpoint="sunset"

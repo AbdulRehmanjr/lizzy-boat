@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 import { PayPalButton } from "./PaypalButton";
 
 type Props = {
-  atom: any;
   state: BookingProps;
   setState: React.Dispatch<React.SetStateAction<any>>;
   apiLinkEndpoint: string;
@@ -12,7 +11,6 @@ type Props = {
 };
 
 const CheckoutOverview = ({
-  atom,
   state,
   setState,
   apiLinkEndpoint,
@@ -21,7 +19,7 @@ const CheckoutOverview = ({
   return (
     <div className="text-yellow flex flex-col gap-4">
       <h1 className="font-ibm text-4xl">Booking overview</h1>
-      <div className="flex flex-col gap-2 text-gray-500">
+      <div className="flex flex-col gap-2 text-[#1f788b]">
         <p className="flex gap-2">
           <span>Date:</span>
           <span>{dayjs(data?.date).format("DD-MM-YYYY")}</span>

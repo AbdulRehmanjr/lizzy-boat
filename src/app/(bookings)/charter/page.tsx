@@ -4,9 +4,8 @@ import React from "react";
 import HalfOrFullDay from "~/components/general/HalfOrFullDay";
 import { PrivateAtom } from "~/utils/stores";
 
-type Props = {};
 
-const Fishing = (props: Props) => {
+const Fishing = () => {
   const [privateAtom, setPrivateData] = useAtom(PrivateAtom);
 
   return (

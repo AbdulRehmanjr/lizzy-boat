@@ -4,9 +4,8 @@ import React from "react";
 import SelectPeople from "~/components/general/SelectPeople";
 import { PrivateAtom } from "~/utils/stores";
 
-type Props = {};
 
-const BookingPeople = (props: Props) => {
+const BookingPeople = () => {
   const [privateAtom, setPrivateData] = useAtom(PrivateAtom);
 
   return (

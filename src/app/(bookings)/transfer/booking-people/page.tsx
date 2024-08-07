@@ -4,9 +4,8 @@ import React from "react";
 import SelectPeople from "~/components/general/SelectPeople";
 import { TransferAtom } from "~/utils/stores";
 
-type Props = {};
 
-const BookingPeople = (props: Props) => {
+const BookingPeople = () => {
   const [transferData, setTransfer] = useAtom(TransferAtom);
 
   return (

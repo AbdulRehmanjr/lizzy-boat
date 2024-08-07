@@ -20,7 +20,7 @@ export const Calendar = () => {
   });
 
   const currentMonth: Dayjs[][] = useMemo(() => {
-    const currentMonth = currentDate || dayjs();
+    const currentMonth = currentDate ?? dayjs();
     const firstDay = currentMonth.clone().startOf("month").day();
     const daysInMonth = currentMonth.daysInMonth();
     const emptyDaysBefore: Dayjs[] = Array(firstDay).fill(null);
@@ -49,34 +49,41 @@ export const Calendar = () => {
   }, [privateData.adult, privateData.daySlot]);
 
   const handlePreviousMonth = () => {
-    const newDate = currentDate || dayjs();
+    const newDate = currentDate ?? dayjs();
     setCurrentDate(newDate.clone().subtract(1, "month"));
   };
 
   const handleNextMonth = () => {
-    const newDate = currentDate || dayjs();
+    const newDate = currentDate ?? dayjs();
     setCurrentDate(newDate.clone().add(1, "month"));
   };
 
   const isBookingTimeOver = (date: Dayjs): boolean => {
     const now = dayjs();
+    console.log(now);
     const hoursLeft = date.diff(now, "hour");
     if (privateData.daySlot === "full_day") {
-      return hoursLeft < 12;
+      return hoursLeft < 24;
     } else if (privateData.daySlot === "half_day") {
-      return hoursLeft < 6;
+      if (privateData.timeSlot === "morning") {
+        return hoursLeft < 1;
+      } else {
+        return false;
+      }
     }
     return true;
   };
   const isBlocked = (date: Dayjs): boolean => {
-    const dayOfWeek = date.day();
+    // const dayOfWeek = date.day();
     if (privateData.daySlot == "full_day")
-      return dayOfWeek === 0 || dayOfWeek === 6;
+      // return dayOfWeek === 0 || dayOfWeek === 6;
+      return false;
+
     return false;
   };
 
   const DateTemplate = ({ date }: { date: Dayjs }) => {
-    if (!date) return <td className="border-[1px] border-black"></td>;
+    if (!date) return <td className="border-[1px] border-[#1f788b]"></td>;
 
     const isPast = date.isBefore(dayjs(), "day");
     const isBlock = isBlocked(date);
@@ -87,13 +94,13 @@ export const Calendar = () => {
     const isTimeOver = isBookingTimeOver(date);
 
     return (
-      <td className="relative h-[3rem] w-[1.5rem] border-[1px] border-black md:h-[6rem] md:w-[2rem]">
+      <td className="relative h-[3rem] w-[1.5rem] border-[1px] border-[#1f788b] md:h-[6rem] md:w-[2rem]">
         <Button
           variant={"outline"}
           type="button"
           className={`absolute left-0 top-0 h-full w-full ${
             bookingDate?.isSame(date) &&
-            "bg-white/60 text-white hover:bg-white/60 hover:text-white [&_span]:text-white"
+            "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"
           }`}
           disabled={isPast || isBlock || isReserved || isTimeOver}
           onClick={() => {
@@ -106,13 +113,7 @@ export const Calendar = () => {
           }}
         >
           <p className={`flex flex-col gap-1`}>
-            <span
-              className={`font-bold ${
-                isPast || isBlock ? "text-gray-400" : "text-white"
-              }`}
-            >
-              {date.date()}
-            </span>
+            <span className={`} font-bold text-[#1f788b]`}>{date.date()}</span>
             {!isPast && !isBlock && !isReserved && !isTimeOver ? (
               <span>{currentPrice} €</span>
             ) : (

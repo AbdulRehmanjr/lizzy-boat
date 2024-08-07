@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { FishingAtom } from "~/utils/stores";
 import { api } from "~/trpc/react";
-import { Button } from "../general/Button";
+import { Button } from "../ui/button";
 
 export const Calendar = () => {
   const router = useRouter();
@@ -20,7 +20,7 @@ export const Calendar = () => {
   });
 
   const currentMonth: Dayjs[][] = useMemo(() => {
-    const currentMonth = currentDate || dayjs();
+    const currentMonth = currentDate ?? dayjs();
     const firstDay = currentMonth.clone().startOf("month").day();
     const daysInMonth = currentMonth.daysInMonth();
     const emptyDaysBefore: Dayjs[] = Array(firstDay).fill(null);
@@ -49,12 +49,12 @@ export const Calendar = () => {
   }, [fishingData.adult, fishingData.daySlot]);
 
   const handlePreviousMonth = () => {
-    const newDate = currentDate || dayjs();
+    const newDate = currentDate ?? dayjs();
     setCurrentDate(newDate.clone().subtract(1, "month"));
   };
 
   const handleNextMonth = () => {
-    const newDate = currentDate || dayjs();
+    const newDate = currentDate ?? dayjs();
     setCurrentDate(newDate.clone().add(1, "month"));
   };
 
@@ -64,13 +64,17 @@ export const Calendar = () => {
     if (fishingData.daySlot === "full_day") {
       return hoursLeft < 12;
     } else if (fishingData.daySlot === "half_day") {
-      return hoursLeft < 6;
+      if (fishingData.timeSlot === "morning") {
+        return hoursLeft < 1;
+      } else {
+        return false;
+      }
     }
     return true;
   };
 
   const DateTemplate = ({ date }: { date: Dayjs }) => {
-    if (!date) return <td className="border border-gray-600"></td>;
+    if (!date) return <td className="border border-[#1f788b]"></td>;
 
     const isPast = date.isBefore(dayjs(), "day");
     const isReserved = bookingBlock.data?.some(
@@ -79,13 +83,13 @@ export const Calendar = () => {
     const isTimeOver = isBookingTimeOver(date);
 
     return (
-      <td className="relative h-12 w-6 border border-gray-600 md:h-24 md:w-8">
+      <td className="relative h-12 w-6 border border-[#1f788b] md:h-24 md:w-8">
         <Button
           variant={"outline"}
           type="button"
           className={`absolute left-0 top-0 h-full w-full ${
             bookingDate?.isSame(date) &&
-            "bg-white/60 text-white hover:bg-white/60 hover:text-white [&_span]:text-white"
+            "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"
           }`}
           disabled={isPast || isReserved || isTimeOver}
           onClick={() => {
@@ -98,11 +102,7 @@ export const Calendar = () => {
           }}
         >
           <p className="flex flex-col gap-1">
-            <span
-              className={`font-bold ${isPast ? "text-gray-400" : "text-white"}`}
-            >
-              {date.date()}
-            </span>
+            <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
             {!isPast && !isReserved && !isTimeOver ? (
               <span>{currentPrice} €</span>
             ) : (

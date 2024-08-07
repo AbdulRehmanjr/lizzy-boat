@@ -4,9 +4,8 @@ import React from "react";
 import HalfOrFullDay from "~/components/general/HalfOrFullDay";
 import { SnorkelingAtom } from "~/utils/stores";
 
-type Props = {};
 
-function Snorkeling({}: Props) {
+function Snorkeling() {
   const [snorkelingData, setSnorkelingData] = useAtom(SnorkelingAtom);
 
   return (

@@ -1,13 +1,11 @@
 "use client";
 import { useAtom } from "jotai/react";
 import React from "react";
-import HalfOrFullDay from "~/components/general/HalfOrFullDay";
 import MorningEvening from "~/components/general/MorningEvening";
 import { SnorkelingAtom } from "~/utils/stores";
 
-type Props = {};
 
-function BookingTime({}: Props) {
+function BookingTime() {
   const [snorkeling, setSnorkeling] = useAtom(SnorkelingAtom);
 
   return (

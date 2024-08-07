@@ -4,9 +4,8 @@ import React from "react";
 import SelectPeople from "~/components/general/SelectPeople";
 import { SunsetAtom } from "~/utils/stores";
 
-type Props = {};
 
-const BookingPeople = (props: Props) => {
+const BookingPeople = () => {
   const [sunsetData, setSunsetData] = useAtom(SunsetAtom);
 
   return (

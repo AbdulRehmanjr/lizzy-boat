@@ -25,9 +25,9 @@ const HalfOrFullDay = ({
     <menu className="grid grid-rows-2 gap-4 text-center md:grid-flow-row md:grid-cols-2 md:grid-rows-1">
       <li
         className={clsx(
-          "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg  p-5 text-lg hover:shadow-md text-white hover:text-white md:w-[400px] md:text-2xl backdrop-blur hover:shadow-white border-[0.5px] border-gray-300",
+          "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg border-2 border-[#1f788b] p-5 text-lg text-[#1f788b] hover:bg-[#1f788b] hover:text-[#F7FCFC] md:w-[400px] md:text-2xl",
           {
-            "text-white shadow-white shadow-md":
+            "bg-[#1f788b] text-[#F7FCFC]":
               state.daySlot && state.daySlot === "half_day",
           },
         )}
@@ -36,14 +36,14 @@ const HalfOrFullDay = ({
           router.push(linkIfHalfDay);
         }}
       >
-        <h4 className="text-4xl md:text-5xl font-semibold">Half Day</h4>
+        <h4 className="text-4xl font-semibold md:text-5xl">Half Day</h4>
         <p>{`${halfDayPrice}€ per tour`}</p>
       </li>
       <li
         className={clsx(
-          "full-day flex h-[300px] w-[350px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg  p-5 text-lg hover:shadow-md text-white  hover:text-white md:w-[400px] md:text-2xl backdrop-blur hover:shadow-white border-[0.5px] border-gray-300",
+          "full-day flex h-[300px] w-[350px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-[#1f788b] p-5 text-lg text-[#1f788b] hover:bg-[#1f788b] hover:text-[#F7FCFC] hover:shadow-md md:w-[400px] md:text-2xl",
           {
-            "text-white shadow-white shadow-md":
+            "bg-[#1f788b] text-[#F7FCFC]":
               state.daySlot && state.daySlot === "full_day",
           },
         )}
@@ -52,7 +52,9 @@ const HalfOrFullDay = ({
           router.push(linkIfFullDay);
         }}
       >
-        <h4 className="text-4xl md:text-5xl drop-shadow-2xl font-semibold">Full Day</h4>
+        <h4 className="text-4xl font-semibold drop-shadow-2xl md:text-5xl">
+          Full Day
+        </h4>
         <p>{`${fullDayPrice}€ per tour`}</p>
       </li>
     </menu>

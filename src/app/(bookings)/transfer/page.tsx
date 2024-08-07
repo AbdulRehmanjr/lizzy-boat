@@ -1,13 +1,11 @@
 "use client";
 import { useAtom } from "jotai/react";
 import React from "react";
-import HalfOrFullDay from "~/components/general/HalfOrFullDay";
 import SelectPeople from "~/components/general/SelectPeople";
 import { TransferAtom } from "~/utils/stores";
 
-type Props = {};
 
-const Fishing = (props: Props) => {
+const Fishing = () => {
   const [transferData, setTransfer] = useAtom(TransferAtom);
 
   return (
