@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
     provider = "prisma-client-js"
 }
@@ -9,8 +6,125 @@ datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
 }
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+
+model LizzyPayPalSellerInfo {
+    id                String @id @default(uuid())
+    trackingId        String @unique
+    merchantId        String
+    partner_client_id String
+    email             String @unique
+}
+
+model LizzyPayPalBoookingInfo {
+    paypalBoookingId  String              @id @default(uuid())
+    paymentEmail      String              @default("")
+    captureId         String
+    payerId           String              @default("")
+    paymentId         String              @default("")
+    contactEmail      String              @default("")
+    LizzyFishingBooking    LizzyFishingBooking[]
+    LizzyTransferBooking   LizzyTransferBooking[]
+    LizzySunsetBooking     LizzySunsetBooking[]
+    LizzyPrivateBooking    LizzyPrivateBooking[]
+    LizzySnorkelingBooking LizzySnorkelingBooking[]
+}
+
+model LizzyFishingBooking {
+    fishingId   String                @id @default(uuid())
+    firstName   String                @default("none")
+    lastName    String                @default("none")
+    email       String                @default("none")
+    phone       String                @default("none")
+    guesthouse  String                @default("none")
+    extra       String                @default("none")
+    information String                @default("none")
+    adults      Int                   @default(0)
+    infants     Int                   @default(0)
+    type        String                @default("none")
+    time        String                @default("none")
+    date        String                @default("none")
+    price       String                @default("none")
+    isRefunded  Boolean               @default(false)
+    paypal      LizzyPayPalBoookingInfo @relation(fields: [paypalId], references: [paypalBoookingId], onDelete: Cascade)
+    paypalId    String
+}
+
+model LizzyTransferBooking {
+    fishingId   String                @id @default(uuid())
+    firstName   String                @default("none")
+    lastName    String                @default("none")
+    email       String                @default("none")
+    phone       String                @default("none")
+    guesthouse  String                @default("none")
+    extra       String                @default("none")
+    information String                @default("none")
+    adults      Int                   @default(0)
+    infants     Int                   @default(0)
+    type        String                @default("none")
+    startTime   String                @default("none")
+    endTime     String                @default("none")
+    blockTime   String                @default("none-none")
+    date        String                @default("none")
+    price       String                @default("none")
+    isRefunded  Boolean               @default(false)
+    paypal      LizzyPayPalBoookingInfo @relation(fields: [paypalId], references: [paypalBoookingId], onDelete: Cascade)
+    paypalId    String
+}
+
+model LizzySunsetBooking {
+    bookingId   String                @id @default(uuid())
+    firstName   String                @default("none")
+    lastName    String                @default("none")
+    email       String                @default("none")
+    phone       String                @default("none")
+    guesthouse  String                @default("none")
+    extra       String                @default("none")
+    information String                @default("none")
+    adults      Int                   @default(0)
+    infants     Int                   @default(0)
+    date        String                @default("none")
+    price       String                @default("none")
+    isRefunded  Boolean               @default(false)
+    paypal      LizzyPayPalBoookingInfo @relation(fields: [paypalId], references: [paypalBoookingId], onDelete: Cascade)
+    paypalId    String
+}
+
+model LizzyPrivateBooking {
+    privateId   String                @id @default(uuid())
+    firstName   String                @default("none")
+    lastName    String                @default("none")
+    email       String                @default("none")
+    phone       String                @default("none")
+    guesthouse  String                @default("none")
+    extra       String                @default("none")
+    information String                @default("none")
+    adults      Int                   @default(0)
+    infants     Int                   @default(0)
+    type        String                @default("none")
+    time        String                @default("none")
+    date        String                @default("none")
+    price       String                @default("none")
+    isRefunded  Boolean               @default(false)
+    paypal      LizzyPayPalBoookingInfo @relation(fields: [paypalId], references: [paypalBoookingId], onDelete: Cascade)
+    paypalId    String
+}
+
+model LizzySnorkelingBooking {
+    snorkelingId String                @id @default(uuid())
+    firstName    String                @default("none")
+    lastName     String                @default("none")
+    email        String                @default("none")
+    phone        String                @default("none")
+    guesthouse   String                @default("none")
+    extra        String                @default("none")
+    information  String                @default("none")
+    adults       Int                   @default(0)
+    infants      Int                   @default(0)
+    type         String                @default("none")
+    time         String                @default("none")
+    date         String                @default("none")
+    price        String                @default("none")
+    isRefunded   Boolean               @default(false)
+    paypal       LizzyPayPalBoookingInfo @relation(fields: [paypalId], references: [paypalBoookingId], onDelete: Cascade)
+    paypalId     String
 }
