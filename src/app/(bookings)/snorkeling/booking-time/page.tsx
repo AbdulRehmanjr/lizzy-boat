@@ -10,7 +10,7 @@ function BookingTime() {
 
   return (
     <>
-      <h1 className={`my-5 text-2xl font-bold md:text-4xl`}>Choose between</h1>
+      <h1 className={`my-5 text-2xl font-normal md:text-4xl`}>Choose between</h1>
       <MorningEvening
         state={snorkeling}
         setState={setSnorkeling}

@@ -6,7 +6,7 @@ import { Button } from "./Button";
 
 const BackButton = () => {
   const router = useRouter();
-  return <Button onClick={() => router.back()}>Go back</Button>;
+  return <Button variant={"outline"} onClick={() => router.back()}>Go back</Button>;
 };
 
 export default BackButton;

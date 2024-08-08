@@ -55,13 +55,13 @@ export const Calendar = () => {
     return (
       <td
         className={clsx(
-          "relative h-[3rem] w-[1.5rem] border-[1px] border-[#1f788b] md:h-[6rem] md:w-[2rem]",
+          "relative h-[2.5rem] w-fit border-[1px] border-[#1f788b] md:h-[6rem] md:w-[2rem]",
         )}
       >
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
+          className={`absolute left-0 top-0 p-0 h-full w-full ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
           disabled={isPast || isLessThan24Hours}
           onClick={() => {
             setBookingDate(() => date);
@@ -72,7 +72,7 @@ export const Calendar = () => {
             }));
           }}
         >
-          <p className={`flex flex-col gap-1`}>
+          <p className={`flex flex-col gap-[1px] md:gap-1 text-[10px] md:text-base`}>
             <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
             {!isPast && !isLessThan24Hours ? (
               <span>{price} €</span>
@@ -87,16 +87,16 @@ export const Calendar = () => {
 
   return (
     <div className="grid gap-4 p-6">
-      <div className="my-6 grid grid-cols-3 grid-rows-1 gap-4">
-        <Button type="button" onClick={handlePreviousMonth}>
+      <div className="my-6 flex w-full items-center justify-between gap-4">
+        <Button type="button" onClick={handlePreviousMonth} className="text-xs md:text-lg">
           Prev
         </Button>
-        <p className="grid place-content-center text-base md:text-xl">
+        <p className="text-base md:text-xl">
           {currentDate
             ? currentDate.format("MMMM YYYY")
             : dayjs().format("MMMM YYYY")}
         </p>
-        <Button type="button" onClick={handleNextMonth}>
+        <Button type="button" onClick={handleNextMonth} className="text-xs md:text-lg">
           Next
         </Button>
       </div>

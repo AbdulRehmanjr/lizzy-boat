@@ -36,7 +36,7 @@ const HalfOrFullDay = ({
           router.push(linkIfHalfDay);
         }}
       >
-        <h4 className="text-4xl font-semibold md:text-5xl">Half Day</h4>
+        <h4 className="text-4xl md:text-5xl">Half day</h4>
         <p>{`${halfDayPrice}€ per tour`}</p>
       </li>
       <li
@@ -52,8 +52,8 @@ const HalfOrFullDay = ({
           router.push(linkIfFullDay);
         }}
       >
-        <h4 className="text-4xl font-semibold drop-shadow-2xl md:text-5xl">
-          Full Day
+        <h4 className="text-4xl md:text-5xl">
+          Full day
         </h4>
         <p>{`${fullDayPrice}€ per tour`}</p>
       </li>

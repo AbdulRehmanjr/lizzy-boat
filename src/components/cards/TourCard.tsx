@@ -21,7 +21,7 @@ const TourCard = ({ image, link, text, className }: Props) => {
         src={image}
         alt="card image"
       />
-      <p className="absolute bottom-[10%] left-1/2 w-full -translate-x-1/2 text-nowrap p-2 text-center text-3xl font-medium text-white backdrop-blur">
+      <p className="absolute bottom-[10%] left-1/2 w-full -translate-x-1/2 text-nowrap p-2 text-center text-lg md:text-3xl font-medium text-white backdrop-blur">
         {text}
       </p>
     </Link>

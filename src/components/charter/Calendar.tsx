@@ -94,11 +94,11 @@ export const Calendar = () => {
     const isTimeOver = isBookingTimeOver(date);
 
     return (
-      <td className="relative h-[3rem] w-[1.5rem] border-[1px] border-[#1f788b] md:h-[6rem] md:w-[2rem]">
+      <td className="relative h-[2.5rem] w-fit border-[1px] border-[#1f788b] md:h-[6rem] md:w-[2rem]">
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full ${
+          className={`absolute left-0 top-0 h-full p-0 w-full ${
             bookingDate?.isSame(date) &&
             "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"
           }`}
@@ -112,8 +112,8 @@ export const Calendar = () => {
             }));
           }}
         >
-          <p className={`flex flex-col gap-1`}>
-            <span className={`} font-bold text-[#1f788b]`}>{date.date()}</span>
+          <p className={`flex flex-col gap-[1px] text-[10px] md:text-base`}>
+            <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
             {!isPast && !isBlock && !isReserved && !isTimeOver ? (
               <span>{currentPrice} €</span>
             ) : (
@@ -127,8 +127,8 @@ export const Calendar = () => {
 
   return (
     <div className="grid gap-4 p-6">
-      <div className="my-6 grid grid-cols-3 grid-rows-1 gap-4">
-        <Button type="button" onClick={handlePreviousMonth}>
+      <div className="my-6 flex w-full items-center justify-between gap-4">
+        <Button type="button" onClick={handlePreviousMonth} className="text-xs md:text-lg">
           Prev
         </Button>
         <p className="grid place-content-center text-base md:text-xl">
@@ -136,7 +136,7 @@ export const Calendar = () => {
             ? currentDate.format("MMMM YYYY")
             : dayjs().format("MMMM YYYY")}
         </p>
-        <Button type="button" onClick={handleNextMonth}>
+        <Button type="button" onClick={handleNextMonth} className="text-xs md:text-lg">
           Next
         </Button>
       </div>

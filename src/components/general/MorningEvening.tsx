@@ -27,7 +27,7 @@ const MorningEvening = ({ state, setState, linkToRedirect }: Props) => {
         }}
       >
         <h4 className="text-4xl md:text-5xl">Morning</h4>
-        <p>09:30 am -12:30 pm</p>
+        <p>09:30 am - 12:30 pm</p>
       </li>
       <li
         className={clsx(
