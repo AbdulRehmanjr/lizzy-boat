@@ -12,8 +12,8 @@ function Snorkeling() {
     <>
       <h1 className={`my-5 text-2xl font-normal md:text-4xl`}>Choose between</h1>
       <HalfOrFullDay
-        halfDayPrice="320"
-        fullDayPrice="400"
+        halfDayPrice="65€ per person"
+        fullDayPrice="125€ per person"
         state={snorkelingData}
         setState={setSnorkelingData}
         linkIfHalfDay="/snorkeling/booking-time"

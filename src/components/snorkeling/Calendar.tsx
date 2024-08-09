@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { SnorkelingAtom } from "~/utils/stores";
 import { api } from "~/trpc/react";
-import { Button } from "../general/Button";
+import { Button } from "../ui/button";
+// import { Button } from "../general/Button";
 
 export const Calendar = () => {
   const router = useRouter();
@@ -39,12 +40,23 @@ export const Calendar = () => {
   }, [currentDate]);
 
   const currentPrice = useMemo(() => {
-    const totalPeople = snorkeling.adult ?? 1;
+    const allAdults = snorkeling.adult ?? 1;
+    const child_0_3 = snorkeling.child_0_3 ?? 0;
+    const child_4_8 = snorkeling.child_4_8 ?? 0;
+    const child_9_13 = snorkeling.child_9_13 ?? 0;
+    const child_4_11 = snorkeling.child_4_11 ?? 0;
+    const adultPrice =
+      snorkeling?.daySlot === "full_day" ? 125 * allAdults : 65 * allAdults;
+    const child_0_3Price = 0;
+    const child_4_8Price = child_4_8 * 25;
+    const child_9_13Price = child_9_13 * 45;
+    const child_4_11Price = child_4_11 * 65;
+
     switch (snorkeling.daySlot) {
       case "full_day":
-        return 100 * totalPeople;
+        return adultPrice + child_4_11Price;
       case "half_day":
-        return 50 * totalPeople;
+        return adultPrice + child_4_8Price + child_9_13Price;
       default:
         return 0;
     }
@@ -83,7 +95,7 @@ export const Calendar = () => {
   };
 
   const DateTemplate = ({ date }: { date: Dayjs }) => {
-    if (!date) return <td className="border-[1px] border-[#1f788b]"></td>;
+    if (!date) return <td className="border-[1px] border-gray-600"></td>;
 
     const isPast = date.isBefore(dayjs(), "day");
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -95,11 +107,11 @@ export const Calendar = () => {
     const isTimeOver = isBookingTimeOver(date);
 
     return (
-      <td className="relative h-[2.5rem] w-fit border-[1px] border-[#1f788b] md:h-[6rem] md:w-[2rem]">
+      <td className="relative h-[2.5rem] w-fit border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]">
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 p-0 h-full w-full ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
+          className={`absolute left-0 top-0 h-full w-full p-0 ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
           disabled={isPast || isBlock || isReserved || isTimeOver}
           onClick={() => {
             setBookingDate(() => date);
@@ -110,10 +122,10 @@ export const Calendar = () => {
             }));
           }}
         >
-          <p className={`flex flex-col gap-[1px] md:gap-1 text-[10px] md:text-base`}>
-            <span className={`text-[#1f788b] font-bold`}>
-              {date.date()}
-            </span>
+          <p
+            className={`flex flex-col gap-[1px] text-[10px] md:gap-1 md:text-base`}
+          >
+            <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
             {!isPast && !isBlock && !isReserved && !isTimeOver ? (
               <span>{currentPrice} €</span>
             ) : (
@@ -128,7 +140,11 @@ export const Calendar = () => {
   return (
     <div className="grid gap-4 md:p-6">
       <div className="my-6 flex w-full items-center justify-between gap-4">
-        <Button type="button" onClick={handlePreviousMonth} className="text-xs md:text-lg">
+        <Button
+          type="button"
+          onClick={handlePreviousMonth}
+          className="text-xs md:text-lg"
+        >
           Prev
         </Button>
         <p className="text-xs md:text-xl">
@@ -136,7 +152,11 @@ export const Calendar = () => {
             ? currentDate.format("MMMM YYYY")
             : dayjs().format("MMMM YYYY")}
         </p>
-        <Button type="button" onClick={handleNextMonth} className="text-xs md:text-lg">
+        <Button
+          type="button"
+          onClick={handleNextMonth}
+          className="text-xs md:text-lg"
+        >
           Next
         </Button>
       </div>
