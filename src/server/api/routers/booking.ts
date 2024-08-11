@@ -197,7 +197,7 @@ export const BookingRouter = createTRPCRouter({
         bookingType: z.string(),
         time: z.string(),
         date: z.string(),
-        total_people: z.number(),
+        total_no_of_people: z.number(),
         boat: z.string(),
         price: z.string(),
       }),
@@ -227,8 +227,8 @@ export const BookingRouter = createTRPCRouter({
               type: input.bookingType,
               date: input.date,
               price: input.price,
-              // total_no_of_people: input.total_people,
-              // boat: input.boat,
+              total_no_of_people: input.total_no_of_people,
+              boat: input.boat,
               paypalId: payPal.paypalBoookingId,
             },
           });
@@ -250,12 +250,13 @@ export const BookingRouter = createTRPCRouter({
               time: input.time,
               date: input.date,
               price: input.price,
-              // total_no_of_people: input.total_people,
-              // boat: input.boat,
+              total_no_of_people: input.total_no_of_people,
+              boat: input.boat,
               paypalId: payPal.paypalBoookingId,
             },
           });
         return payPal.paypalBoookingId;
+        // return { message: "Booking Created Successfully!" };
       } catch (error) {
         if (error instanceof TRPCClientError) {
           console.error(error.message);
@@ -269,10 +270,15 @@ export const BookingRouter = createTRPCRouter({
   getSnorkelingBoatsCapacity: publicProcedure.query(async ({ ctx, input }) => {
     try {
       const formattedDate = dayjs(new Date()).format("YYYY-MM-DD");
-      const allBookings = await ctx.db.lizzySnorkelingBooking.findMany({
-        where: { date: formattedDate },
+      console.log("Formatted Date: >>>>>>>>>>>", formattedDate);
+      const allFullDayBookings = await ctx.db.lizzySnorkelingBooking.findMany({
+        where: { date: formattedDate, type: "full_day" },
       });
-      return allBookings;
+      console.log("allFullDays: >>>>>>>>>>>", allFullDayBookings);
+      const allHalfDayBookings = await ctx.db.lizzySnorkelingBooking.findMany({
+        where: { date: formattedDate, type: "half_day" },
+      });
+      return { full_day: allFullDayBookings, half_day: allHalfDayBookings };
     } catch (error) {
       if (error instanceof TRPCClientError) {
         console.error(error.message);
@@ -325,7 +331,7 @@ export const BookingRouter = createTRPCRouter({
             adults: input.adults,
             infants: input.infants,
             type: input.bookingType,
-            // mode: input.mode,
+            mode: input.mode,
             startTime: input.startTime,
             endTime: input.endTime,
             blockTime: input.blockTime,

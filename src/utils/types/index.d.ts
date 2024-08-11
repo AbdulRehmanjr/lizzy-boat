@@ -57,6 +57,8 @@ type SnorkelingBookingProps = {
   child_4_8: number | undefined;
   child_9_13: number | undefined;
   child_4_11: number | undefined;
+  total_no_of_people: number | undefined;
+  boat: string | undefined;
 };
 
 type FormProps = {

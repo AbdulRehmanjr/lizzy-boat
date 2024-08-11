@@ -3,16 +3,34 @@
 import dayjs, { type Dayjs } from "dayjs";
 import { useAtom } from "jotai/react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { SnorkelingAtom } from "~/utils/stores";
 import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
 // import { Button } from "../general/Button";
 
+function getTotal(arr: any[], nameField: string, valueField: string) {
+  return arr.reduce((acc, curr) => {
+    const name = curr[nameField];
+    const value = curr[valueField];
+
+    if (!acc[name]) {
+      acc[name] = 0;
+    }
+
+    acc[name] += value;
+    return acc;
+  }, {});
+}
+
 export const Calendar = () => {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
   const [bookingDate, setBookingDate] = useState<Dayjs>();
+  const [seatsAvailable, setSeatsAvailable] = useState({
+    ten_seater: 0,
+    seventeen_seater: 0,
+  });
   const [snorkeling, setSnorkeling] = useAtom(SnorkelingAtom);
 
   const bookingBlock = api.booking.getSnorkelingBlockDates.useQuery({
@@ -21,6 +39,131 @@ export const Calendar = () => {
     adult: snorkeling.adult ?? 0,
   });
 
+  const allBookings = api.booking.getSnorkelingBoatsCapacity.useQuery();
+
+  // useMemo to calculate isCapacityFull and totalSeatsAvailable
+  const { isCapacityFull, totalSeatsAvailable } = useMemo(() => {
+    const full_day = allBookings.data?.full_day;
+    const half_day = allBookings.data?.half_day;
+    const half_day_morning = half_day?.filter(
+      (item) => item.time !== "morning",
+    );
+    const half_day_afternoon = half_day?.filter(
+      (item) => item.time !== "afternoon",
+    );
+    const total_bookings = [...(full_day || []), ...(half_day || [])];
+    const total_bookings_morning = [
+      ...(full_day || []),
+      ...(half_day_morning || []),
+    ];
+    const total_bookings_afternoon = [
+      ...(full_day || []),
+      ...(half_day_afternoon || []),
+    ];
+    const result_full_day = getTotal(
+      total_bookings,
+      "boat",
+      "total_no_of_people",
+    );
+    const result_half_day_morning = getTotal(
+      total_bookings_morning,
+      "boat",
+      "total_no_of_people",
+    );
+    const result_half_day_afternoon = getTotal(
+      total_bookings_afternoon,
+      "boat",
+      "total_no_of_people",
+    );
+    if (
+      snorkeling.daySlot === "half_day" &&
+      snorkeling.timeSlot === "afternoon"
+    ) {
+      const availableSeats = {
+        ten_seater: 10 - (result_half_day_afternoon.ten_seater ?? 0),
+        seventeen_seater:
+          17 - (result_half_day_afternoon.seventeen_seater ?? 0),
+      };
+
+      const total_seats =
+        (result_half_day_afternoon.ten_seater ?? 0) +
+        (result_half_day_afternoon.seventeen_seater ?? 0);
+
+      return {
+        isCapacityFull: total_seats > 27,
+        totalSeatsAvailable: availableSeats,
+      };
+    }
+    if (
+      snorkeling.daySlot === "half_day" &&
+      snorkeling.timeSlot === "morning"
+    ) {
+      const availableSeats = {
+        ten_seater: 10 - (result_half_day_morning.ten_seater ?? 0),
+        seventeen_seater: 17 - (result_half_day_morning.seventeen_seater ?? 0),
+      };
+
+      const total_seats =
+        (result_half_day_morning.ten_seater ?? 0) +
+        (result_half_day_morning.seventeen_seater ?? 0);
+
+      return {
+        isCapacityFull: total_seats > 27,
+        totalSeatsAvailable: availableSeats,
+      };
+    }
+
+    const availableSeats = {
+      ten_seater: 10 - (result_full_day.ten_seater ?? 0),
+      seventeen_seater: 17 - (result_full_day.seventeen_seater ?? 0),
+    };
+
+    const total_seats =
+      (result_full_day.ten_seater ?? 0) +
+      (result_full_day.seventeen_seater ?? 0);
+
+    return {
+      isCapacityFull: total_seats > 27,
+      totalSeatsAvailable: availableSeats,
+    };
+  }, [allBookings.data]);
+
+  // useEffect to update seatsAvailable state
+  useEffect(() => {
+    setSeatsAvailable(totalSeatsAvailable);
+  }, [totalSeatsAvailable]);
+
+  // Memoized setBoat function
+  const setBoat = useCallback(() => {
+    console.log(
+      ">>>Total No of people Selected<<<",
+      snorkeling.total_no_of_people,
+    );
+    const peopleSelected = snorkeling.total_no_of_people ?? 0;
+
+    if (peopleSelected <= seatsAvailable.ten_seater) {
+      setSnorkeling((prev) => ({
+        ...prev,
+        boat: "ten_seater",
+      }));
+    } else if (peopleSelected <= seatsAvailable.seventeen_seater) {
+      setSnorkeling((prev) => ({
+        ...prev,
+        boat: "seventeen_seater",
+      }));
+    } else {
+      setSnorkeling((prev) => ({
+        ...prev,
+        boat: undefined,
+      }));
+    }
+  }, [snorkeling.total_no_of_people, seatsAvailable, setSnorkeling]);
+
+  // useEffect to call setBoat when necessary
+  useEffect(() => {
+    setBoat();
+  }, [setBoat]);
+  console.log(">>>>>", isCapacityFull);
   const currentMonth: Dayjs[][] = useMemo(() => {
     const currentMonth = currentDate ?? dayjs();
     const firstDay = currentMonth.clone().startOf("month").day();
@@ -60,7 +203,13 @@ export const Calendar = () => {
       default:
         return 0;
     }
-  }, [snorkeling.adult, snorkeling.daySlot, snorkeling.child_4_11, snorkeling.child_4_8, snorkeling.child_9_13]);
+  }, [
+    snorkeling.adult,
+    snorkeling.daySlot,
+    snorkeling.child_4_11,
+    snorkeling.child_4_8,
+    snorkeling.child_9_13,
+  ]);
 
   const handlePreviousMonth = () => {
     const newDate = currentDate ?? dayjs();
@@ -74,14 +223,15 @@ export const Calendar = () => {
 
   const isBlocked = (date: Dayjs): boolean => {
     const dayOfWeek = date.day();
-    if (snorkeling.daySlot == "full_day")
-      return dayOfWeek === 0 ?? dayOfWeek === 6;
+    if (snorkeling.daySlot == "full_day") return dayOfWeek === 6;
+    return dayOfWeek === 0 || dayOfWeek === 6;
     return false;
   };
 
   const isBookingTimeOver = (date: Dayjs): boolean => {
     const now = dayjs();
     const hoursLeft = date.diff(now, "hour");
+
     if (snorkeling.daySlot === "full_day") {
       return hoursLeft < 12;
     } else if (snorkeling.daySlot === "half_day") {
@@ -91,28 +241,41 @@ export const Calendar = () => {
         return false;
       }
     }
-    return true;
+    return false;
   };
 
   const DateTemplate = ({ date }: { date: Dayjs }) => {
     if (!date) return <td className="border-[1px] border-gray-600"></td>;
+    const currDate: Dayjs = dayjs(new Date());
 
     const isPast = date.isBefore(dayjs(), "day");
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const isBlock = isBlocked(date);
     const isReserved = bookingBlock.data?.some(
       (blockDate) => date.format("YYYY-MM-DD") === blockDate,
     );
-
     const isTimeOver = isBookingTimeOver(date);
+
+    // Disable the date if no boat is available
+    const isBoatUnavailable = snorkeling.boat === undefined;
+
+    const isDisabled =
+      isPast ||
+      isBlock ||
+      isReserved ||
+      isTimeOver ||
+      (isCapacityFull && date.isSame(currDate, "day")) ||
+      isBoatUnavailable;
 
     return (
       <td className="relative h-[2.5rem] w-fit border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]">
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full p-0 ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
-          disabled={isPast || isBlock || isReserved || isTimeOver}
+          className={`absolute left-0 top-0 h-full w-full p-0 ${
+            bookingDate?.isSame(date) &&
+            "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"
+          }`}
+          disabled={isDisabled}
           onClick={() => {
             setBookingDate(() => date);
             setSnorkeling((prev) => ({
@@ -126,11 +289,7 @@ export const Calendar = () => {
             className={`flex flex-col gap-[1px] text-[10px] md:gap-1 md:text-base`}
           >
             <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
-            {!isPast && !isBlock && !isReserved && !isTimeOver ? (
-              <span>{currentPrice} €</span>
-            ) : (
-              <span>N/A</span>
-            )}
+            {!isDisabled ? <span>{currentPrice} €</span> : <span>N/A</span>}
           </p>
         </Button>
       </td>
