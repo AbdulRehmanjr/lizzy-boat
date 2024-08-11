@@ -61,9 +61,14 @@ export async function POST(req: Request) {
       guesthouse: formData.guesthouse ?? "none",
       date: snorkeling.date ?? "none",
       adults: snorkeling.adult ?? 0,
-      infants: snorkeling.infants ?? 0,
+      child_0_3: snorkeling.child_0_3 ?? 0,
+      child_4_8: snorkeling.child_4_8 ?? 0,
+      child_9_13: snorkeling.child_9_13 ?? 0,
+      child_4_11: snorkeling.child_4_11 ?? 0,
       bookingType: snorkeling.daySlot ?? "none",
       time: snorkeling.timeSlot ?? "none",
+      boat: "none",
+      total_people: 2,
       price: snorkeling.price + "",
     };
 

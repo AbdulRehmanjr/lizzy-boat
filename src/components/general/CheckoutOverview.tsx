@@ -24,28 +24,69 @@ const CheckoutOverview = ({
           <span>Date:</span>
           <span>{dayjs(data?.date).format("DD-MM-YYYY")}</span>
         </p>
-        <p className="flex gap-2">
-          <span>Boat Type:</span>
-          <span>{data?.boatType}</span>
-        </p>
-        <p className="flex gap-2">
-          <span>Booking Type:</span>
-          <span>{data?.daySlot}</span>
-        </p>
+        {}
+        {data?.boatType && (
+          <p className="flex gap-2">
+            <span>Boat type:</span>
+            <span>{data?.boatType}</span>
+          </p>
+        )}
+        {data?.daySlot && (
+          <p className="flex gap-2">
+            <span>Booking type:</span>
+            <span>{data?.daySlot}</span>
+          </p>
+        )}
         {data?.daySlot === "half_day" && (
           <p className="flex gap-2">
             <span>Booking Time:</span>
             <span>{data?.timeSlot}</span>
           </p>
         )}
-        <p className="flex gap-2">
-          <span>Adults :</span>
-          <span>{data?.adult}</span>
-        </p>
-        <p className="flex gap-2">
-          <span>Infants :</span>
-          <span>{data?.infants}</span>
-        </p>
+        {data?.adult && (
+          <p className="flex gap-2">
+            <span>Adults :</span>
+            <span>{data?.adult}</span>
+          </p>
+        )}
+        {data?.infants ? (
+          <p className="flex gap-2">
+            <span>Infants :</span>
+            <span>{data?.infants}</span>
+          </p>
+        ) : (
+          ""
+        )}
+        {data?.child_0_3 && (
+          <p className="flex gap-2">
+            <span>Child (0-3) :</span>
+            <span>{data?.child_0_3}</span>
+          </p>
+        )}
+        {data?.child_4_8 && data?.daySlot === "half_day" && (
+          <p className="flex gap-2">
+            <span>Child (4-8) :</span>
+            <span>{data?.child_4_8}</span>
+          </p>
+        )}
+        {data?.child_9_13 && data?.daySlot === "half_day" && (
+          <p className="flex gap-2">
+            <span>Child (9-13) :</span>
+            <span>{data?.child_9_13}</span>
+          </p>
+        )}
+        {data?.child_4_11 && data?.daySlot === "full_day" && (
+          <p className="flex gap-2">
+            <span>Child (4-11) :</span>
+            <span>{data?.child_4_11}</span>
+          </p>
+        )}
+        {data?.mode &&  (
+          <p className="flex gap-2">
+            <span>Transfer Mode :</span>
+            <span>{data?.mode}</span>
+          </p>
+        )}
         <p className="flex gap-2 border-y-2 py-3 font-extrabold">
           <span>Price:</span>
           <span>{data?.price} €</span>

@@ -40,9 +40,9 @@ export const Calendar = () => {
     const totalPeople = privateData.adult ?? 1;
     switch (privateData.daySlot) {
       case "full_day":
-        return totalPeople <= 4 ? 100 : 100 + totalPeople * 30;
+        return totalPeople * 800;
       case "half_day":
-        return totalPeople <= 4 ? 50 : 50 + totalPeople * 30;
+        return totalPeople * 400;
       default:
         return 0;
     }
@@ -74,11 +74,9 @@ export const Calendar = () => {
     return true;
   };
   const isBlocked = (date: Dayjs): boolean => {
-    // const dayOfWeek = date.day();
+    const dayOfWeek = date.day();
     if (privateData.daySlot == "full_day")
-      // return dayOfWeek === 0 || dayOfWeek === 6;
-      return false;
-
+      return dayOfWeek === 0 || dayOfWeek === 6;
     return false;
   };
 
@@ -98,7 +96,7 @@ export const Calendar = () => {
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full p-0 w-full ${
+          className={`absolute left-0 top-0 h-full w-full p-0 ${
             bookingDate?.isSame(date) &&
             "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"
           }`}
@@ -128,7 +126,11 @@ export const Calendar = () => {
   return (
     <div className="grid gap-4 p-6">
       <div className="my-6 flex w-full items-center justify-between gap-4">
-        <Button type="button" onClick={handlePreviousMonth} className="text-xs md:text-lg">
+        <Button
+          type="button"
+          onClick={handlePreviousMonth}
+          className="text-xs md:text-lg"
+        >
           Prev
         </Button>
         <p className="grid place-content-center text-base md:text-xl">
@@ -136,7 +138,11 @@ export const Calendar = () => {
             ? currentDate.format("MMMM YYYY")
             : dayjs().format("MMMM YYYY")}
         </p>
-        <Button type="button" onClick={handleNextMonth} className="text-xs md:text-lg">
+        <Button
+          type="button"
+          onClick={handleNextMonth}
+          className="text-xs md:text-lg"
+        >
           Next
         </Button>
       </div>

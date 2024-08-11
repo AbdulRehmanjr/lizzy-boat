@@ -67,6 +67,7 @@ export async function POST(req: Request) {
       endTime: transferData.endTime ?? "none",
       blockTime: transferData.blockTime ?? "none-none",
       price: transferData.price + "",
+      mode: transferData.mode ?? "none",
     };
 
     await api.booking.createTransferBooking(object);

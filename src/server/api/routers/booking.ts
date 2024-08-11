@@ -190,10 +190,15 @@ export const BookingRouter = createTRPCRouter({
         extra: z.string(),
         information: z.string(),
         adults: z.number(),
-        infants: z.number(),
+        child_0_3: z.number(),
+        child_4_8: z.number(),
+        child_9_13: z.number(),
+        child_4_11: z.number(),
         bookingType: z.string(),
         time: z.string(),
         date: z.string(),
+        total_people: z.number(),
+        boat: z.string(),
         price: z.string(),
       }),
     )
@@ -217,10 +222,13 @@ export const BookingRouter = createTRPCRouter({
               extra: input.extra,
               information: input.information,
               adults: input.adults,
-              infants: input.infants,
+              child_0_3: input.child_0_3,
+              child_4_11: input.child_4_11,
               type: input.bookingType,
               date: input.date,
               price: input.price,
+              // total_no_of_people: input.total_people,
+              // boat: input.boat,
               paypalId: payPal.paypalBoookingId,
             },
           });
@@ -235,11 +243,15 @@ export const BookingRouter = createTRPCRouter({
               extra: input.extra,
               information: input.information,
               adults: input.adults,
-              infants: input.infants,
+              child_0_3: input.child_0_3,
+              child_4_8: input.child_4_8,
+              child_9_13: input.child_9_13,
               type: input.bookingType,
               time: input.time,
               date: input.date,
               price: input.price,
+              // total_no_of_people: input.total_people,
+              // boat: input.boat,
               paypalId: payPal.paypalBoookingId,
             },
           });
@@ -254,6 +266,23 @@ export const BookingRouter = createTRPCRouter({
       }
     }),
 
+  getSnorkelingBoatsCapacity: publicProcedure.query(async ({ ctx, input }) => {
+    try {
+      const formattedDate = dayjs(new Date()).format("YYYY-MM-DD");
+      const allBookings = await ctx.db.lizzySnorkelingBooking.findMany({
+        where: { date: formattedDate },
+      });
+      return allBookings;
+    } catch (error) {
+      if (error instanceof TRPCClientError) {
+        console.error(error.message);
+        throw new Error(error.message);
+      }
+      console.error(error);
+      throw new Error("Something went wrong");
+    }
+  }),
+
   createTransferBooking: publicProcedure
     .input(
       z.object({
@@ -267,6 +296,7 @@ export const BookingRouter = createTRPCRouter({
         adults: z.number(),
         infants: z.number(),
         bookingType: z.string(),
+        mode: z.string(),
         startTime: z.string(),
         endTime: z.string(),
         blockTime: z.string(),
@@ -295,6 +325,7 @@ export const BookingRouter = createTRPCRouter({
             adults: input.adults,
             infants: input.infants,
             type: input.bookingType,
+            // mode: input.mode,
             startTime: input.startTime,
             endTime: input.endTime,
             blockTime: input.blockTime,
@@ -515,6 +546,32 @@ export const BookingRouter = createTRPCRouter({
         }
         console.error(error);
         throw new Error("Something went wrong");
+      }
+    }),
+
+  getSunsetBlockDates: publicProcedure
+    // .input(z.object({ date: z.string().optional() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const blockDates: string[] = [];
+
+        const bookings = await ctx.db.lizzySunsetBooking.findMany({
+          where: {
+            date: { gte: dayjs(new Date()).format("YYYY-MM-DD") },
+          },
+          select: {
+            date: true,
+          },
+        });
+
+        bookings.forEach((booking) => {
+          blockDates.push(booking.date);
+        });
+
+        return blockDates;
+      } catch (error) {
+        console.error(error);
+        throw new Error("Something went wrong while fetching blocked dates.");
       }
     }),
 });

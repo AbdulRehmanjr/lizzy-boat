@@ -10,10 +10,10 @@ const Fishing = () => {
 
   return (
     <>
-      <h1 className={`text-2xl font-bold md:text-4xl`}>Choose between</h1>
+      <h1 className={`text-2xl font-bold md:text-4xl text-center`}>Choose between</h1>
       <HalfOrFullDay
-        halfDayPrice="230"
-        fullDayPrice="210"
+        halfDayPrice="4 Pax 400 €"
+        fullDayPrice="4 Pax 800 €"
         state={privateAtom}
         setState={setPrivateData}
         linkIfHalfDay="/charter/booking-time"

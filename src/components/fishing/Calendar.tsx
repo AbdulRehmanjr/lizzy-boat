@@ -40,9 +40,9 @@ export const Calendar = () => {
     const totalPeople = fishingData.adult ?? 1;
     switch (fishingData.daySlot) {
       case "full_day":
-        return totalPeople <= 4 ? 100 : 100 + totalPeople * 30;
+        return totalPeople * 1100;
       case "half_day":
-        return totalPeople <= 4 ? 50 : 50 + totalPeople * 30;
+        return totalPeople * 550;
       default:
         return 0;
     }
@@ -74,20 +74,21 @@ export const Calendar = () => {
   };
 
   const DateTemplate = ({ date }: { date: Dayjs }) => {
-    if (!date) return <td className="border border-[#1f788b]"></td>;
+    if (!date) return <td className="border border-gray-600"></td>;
 
     const isPast = date.isBefore(dayjs(), "day");
     const isReserved = bookingBlock.data?.some(
       (blockDate) => date.format("YYYY-MM-DD") === blockDate,
     );
+    console.log(isReserved);
     const isTimeOver = isBookingTimeOver(date);
 
     return (
-      <td className="relative h-[2.5rem] w-fit border-[1px] border-[#1f788b] md:h-[6rem] md:w-[2rem]">
+      <td className="relative h-[2.5rem] w-fit border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]">
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full p-0 w-full ${
+          className={`absolute left-0 top-0 h-full w-full p-0 ${
             bookingDate?.isSame(date) &&
             "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"
           }`}
@@ -101,7 +102,7 @@ export const Calendar = () => {
             }));
           }}
         >
-          <p className="flex flex-col gap-[1px] md:gap-1 text-[10px] md:text-base">
+          <p className="flex flex-col gap-[1px] text-[10px] md:gap-1 md:text-base">
             <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
             {!isPast && !isReserved && !isTimeOver ? (
               <span>{currentPrice} €</span>
@@ -117,7 +118,11 @@ export const Calendar = () => {
   return (
     <div className="grid gap-4 md:p-6">
       <div className="my-6 flex w-full items-center justify-between gap-4">
-        <Button type="button" className="text-xs md:text-lg" onClick={handlePreviousMonth}>
+        <Button
+          type="button"
+          className="text-xs md:text-lg"
+          onClick={handlePreviousMonth}
+        >
           Prev
         </Button>
         <p className="text-base md:text-xl">
@@ -125,7 +130,11 @@ export const Calendar = () => {
             ? currentDate.format("MMMM YYYY")
             : dayjs().format("MMMM YYYY")}
         </p>
-        <Button type="button" className="text-xs md:text-lg" onClick={handleNextMonth}>
+        <Button
+          type="button"
+          className="text-xs md:text-lg"
+          onClick={handleNextMonth}
+        >
           Next
         </Button>
       </div>

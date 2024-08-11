@@ -37,7 +37,7 @@ const HalfOrFullDay = ({
         }}
       >
         <h4 className="text-4xl md:text-5xl">Half day</h4>
-        <p>{`${halfDayPrice}€ per tour`}</p>
+        <p>{halfDayPrice}</p>
       </li>
       <li
         className={clsx(
@@ -55,7 +55,7 @@ const HalfOrFullDay = ({
         <h4 className="text-4xl md:text-5xl">
           Full day
         </h4>
-        <p>{`${fullDayPrice}€ per tour`}</p>
+        <p>{fullDayPrice}</p>
       </li>
     </menu>
   );
