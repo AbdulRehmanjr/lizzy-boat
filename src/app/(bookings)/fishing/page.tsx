@@ -9,10 +9,10 @@ const Fishing = () => {
   const [fishingData, setFishingData] = useAtom(FishingAtom);
   return (
     <>
-      <h1 className={`text-2xl font-bold md:text-4xl`}>Choose between</h1>
+      <h1 className={`text-2xl font-bold md:text-4xl text-center`}>Choose between</h1>
       <HalfOrFullDay
-        halfDayPrice="230"
-        fullDayPrice="210"
+        halfDayPrice="2 Pax 550 €"
+        fullDayPrice="2 Pax 1,100 €"
         state={fishingData}
         setState={setFishingData}
         linkIfHalfDay="/fishing/booking-time"

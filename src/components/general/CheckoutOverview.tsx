@@ -49,6 +49,14 @@ const CheckoutOverview = ({
             <span>{data?.adult}</span>
           </p>
         )}
+        {data?.infants ? (
+          <p className="flex gap-2">
+            <span>Infants :</span>
+            <span>{data?.infants}</span>
+          </p>
+        ) : (
+          ""
+        )}
         {data?.child_0_3 && (
           <p className="flex gap-2">
             <span>Child (0-3) :</span>
@@ -71,6 +79,12 @@ const CheckoutOverview = ({
           <p className="flex gap-2">
             <span>Child (4-11) :</span>
             <span>{data?.child_4_11}</span>
+          </p>
+        )}
+        {data?.mode &&  (
+          <p className="flex gap-2">
+            <span>Transfer Mode :</span>
+            <span>{data?.mode}</span>
           </p>
         )}
         <p className="flex gap-2 border-y-2 py-3 font-extrabold">

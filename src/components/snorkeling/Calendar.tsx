@@ -41,13 +41,13 @@ export const Calendar = () => {
 
   const currentPrice = useMemo(() => {
     const allAdults = snorkeling.adult ?? 1;
-    const child_0_3 = snorkeling.child_0_3 ?? 0;
+    // const child_0_3 = snorkeling.child_0_3 ?? 0;
     const child_4_8 = snorkeling.child_4_8 ?? 0;
     const child_9_13 = snorkeling.child_9_13 ?? 0;
     const child_4_11 = snorkeling.child_4_11 ?? 0;
     const adultPrice =
       snorkeling?.daySlot === "full_day" ? 125 * allAdults : 65 * allAdults;
-    const child_0_3Price = 0;
+    // const child_0_3Price = 0;
     const child_4_8Price = child_4_8 * 25;
     const child_9_13Price = child_9_13 * 45;
     const child_4_11Price = child_4_11 * 65;
@@ -60,7 +60,7 @@ export const Calendar = () => {
       default:
         return 0;
     }
-  }, [snorkeling.adult, snorkeling.daySlot]);
+  }, [snorkeling.adult, snorkeling.daySlot, snorkeling.child_4_11, snorkeling.child_4_8, snorkeling.child_9_13]);
 
   const handlePreviousMonth = () => {
     const newDate = currentDate ?? dayjs();
@@ -73,9 +73,9 @@ export const Calendar = () => {
   };
 
   const isBlocked = (date: Dayjs): boolean => {
-    // const dayOfWeek = date.day();
-    if (snorkeling.daySlot == "full_day") return false;
-    // return dayOfWeek === 0 ?? dayOfWeek === 6;
+    const dayOfWeek = date.day();
+    if (snorkeling.daySlot == "full_day")
+      return dayOfWeek === 0 ?? dayOfWeek === 6;
     return false;
   };
 

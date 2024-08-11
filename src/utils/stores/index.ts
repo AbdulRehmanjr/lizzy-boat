@@ -27,7 +27,7 @@ const transferInitial: TransferBookingProps = {
   endTime: undefined,
   blockTime: undefined,
   date: undefined,
-  duration: 0,
+  mode: undefined,
   price: 0,
   adult: 0,
   infants: 0,

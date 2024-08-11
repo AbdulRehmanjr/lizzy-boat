@@ -67,17 +67,17 @@ const BookingForm = () => {
         className={`text-mid-blue grid grid-cols-2 gap-3`}
       >
         <h1 className="font-ibm col-span-2 text-4xl">
-          Personal Information
+          Personal information
         </h1>
         <FormField
           control={form.control}
           name="firstName"
           render={({ field }) => (
             <FormItem className="col-span-2 md:col-span-1">
-              <FormLabel>First Name</FormLabel>
+              <FormLabel>First name</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter the first name"
+                  placeholder="Enter first name"
                   {...field}
                   value={field.value ?? ""}
                 />
@@ -91,10 +91,10 @@ const BookingForm = () => {
           name="lastName"
           render={({ field }) => (
             <FormItem className="col-span-2 md:col-span-1">
-              <FormLabel>Last Name</FormLabel>
+              <FormLabel>Last name</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter the last name"
+                  placeholder="Enter last name"
                   {...field}
                   value={field.value ?? ""}
                 />
@@ -111,7 +111,7 @@ const BookingForm = () => {
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter the email"
+                  placeholder="Enter email"
                   {...field}
                   value={field.value ?? ""}
                 />
@@ -128,7 +128,7 @@ const BookingForm = () => {
               <FormLabel>Phone no.</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter the phone no."
+                  placeholder="Enter phone no."
                   {...field}
                   value={field.value ?? ""}
                 />
@@ -145,7 +145,7 @@ const BookingForm = () => {
               <FormLabel>Guesthouse name</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter the guesthouse name"
+                  placeholder="Enter guesthouse name"
                   {...field}
                   value={field.value ?? ""}
                 />

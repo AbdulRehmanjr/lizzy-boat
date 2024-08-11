@@ -1,8 +1,5 @@
-"use client";
-import { useAtom } from "jotai/react";
 import React from "react";
 import SelectPeopleSnorkeling from "~/components/snorkeling/SelectPeopleSnorkeling";
-import { SnorkelingAtom } from "~/utils/stores";
 
 const BookingPeople = () => {
   return (

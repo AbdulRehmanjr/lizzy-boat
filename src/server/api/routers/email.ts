@@ -450,6 +450,7 @@ export const EmailRouter = createTRPCRouter({
         adults: z.number(),
         infants: z.number(),
         bookingType: z.string(),
+        mode: z.string(),
         startTime: z.string(),
         endTime: z.string(),
         blockTime: z.string(),
@@ -530,6 +531,10 @@ export const EmailRouter = createTRPCRouter({
                             <p>
                                 <span style="font-weight:bold;">Booking Type: </span>
                                 <span>${input.bookingType}</span>
+                            </p>
+                            <p>
+                                <span style="font-weight:bold;">Transfer Mode: </span>
+                                <span>${input.mode}</span>
                             </p>
                             <p>
                                 <span style="font-weight:bold;">Start time: </span>
@@ -1079,6 +1084,7 @@ export const EmailRouter = createTRPCRouter({
         adults: z.number(),
         infants: z.number(),
         bookingType: z.string(),
+        mode: z.string(),
         startTime: z.string(),
         endTime: z.string(),
         blockTime: z.string(),
@@ -1152,6 +1158,10 @@ export const EmailRouter = createTRPCRouter({
                             <p>
                                 <span style="font-weight:bold;">Booking Type: </span>
                                 <span>${input.bookingType}</span>
+                            </p>
+                            <p>
+                                <span style="font-weight:bold;">Transfer Mode: </span>
+                                <span>${input.mode}</span>
                             </p>
                             <p>
                                 <span style="font-weight:bold;">Start time: </span>

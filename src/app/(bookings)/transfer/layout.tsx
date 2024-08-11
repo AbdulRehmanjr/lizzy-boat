@@ -12,9 +12,9 @@ export default function FishingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex flex-col items-center justify-center gap-4">
-      <BackButton />
+    <section className="flex flex-col items-center justify-center gap-4 pb-3">
       {children}
+      <BackButton />
     </section>
   );
 }

@@ -25,7 +25,7 @@ type TransferBookingProps = {
   endTime: string | undefined;
   blockTime: string | undefined;
   date: string | undefined;
-  duration: number;
+  mode: string | undefined;
   price: number;
   adult: number;
   infants: number;
@@ -94,6 +94,7 @@ type BookingProps = Partial<{
   information?: string;
   extra?: string;
   guesthouse?: string;
+  mode?: string;
 }>;
 
 type SelectPeopleAge = {
@@ -102,6 +103,4 @@ type SelectPeopleAge = {
   age_range: string;
 };
 
-type SelectPeopleAgeList = {
-  [key: string]: SelectPeopleAge[];
-};
+type SelectPeopleAgeList = Record<string, SelectPeopleAge[]>;

@@ -67,6 +67,8 @@ export async function POST(req: Request) {
       child_4_11: snorkeling.child_4_11 ?? 0,
       bookingType: snorkeling.daySlot ?? "none",
       time: snorkeling.timeSlot ?? "none",
+      boat: "none",
+      total_people: 2,
       price: snorkeling.price + "",
     };
 

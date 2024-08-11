@@ -1,7 +1,7 @@
 "use client";
 
 import dayjs, { type Dayjs } from "dayjs";
-import { useSetAtom } from "jotai/react";
+import { useAtom } from "jotai/react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { TransferAtom } from "~/utils/stores";
@@ -12,7 +12,7 @@ export const Calendar = () => {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
   const [bookingDate, setBookingDate] = useState<Dayjs>();
-  const setTransferData = useSetAtom(TransferAtom);
+  const [transferData, setTransferData] = useAtom(TransferAtom);
 
   const currentMonth: Dayjs[][] = useMemo(() => {
     const currentMonth = currentDate || dayjs();
@@ -41,12 +41,31 @@ export const Calendar = () => {
     const newDate = currentDate || dayjs();
     setCurrentDate(newDate.clone().add(1, "month"));
   };
+  const currentPrice = useMemo(() => {
+    const transferMode = transferData.mode;
+    switch (transferMode) {
+      case "praslin_one_way":
+        return 125;
+      case "praslin_back_n_forth":
+        return 200;
+      case "felicity_one_way":
+        return 125;
+      case "felicity_back_n_forth":
+        return 200;
+      case "mahe_one_way":
+        return 400;
+      case "mahe_back_n_forth":
+        return 700;
+      default:
+        return 0;
+    }
+  }, [transferData.mode]);
 
   const DateTemplate = ({ date }: { date: Dayjs }) => {
     if (!date) return <td className="border-[1px] border-[#1f788b]"></td>;
 
     const isPast = date.isBefore(dayjs(), "day");
-    const price = 100;
+    // const price = 100;
     //Check for 12 hours
     const now = dayjs();
     const hoursLeft = date.diff(now, "hour");
@@ -61,21 +80,23 @@ export const Calendar = () => {
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 p-0 h-full w-full ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
+          className={`absolute left-0 top-0 h-full w-full p-0 ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
           disabled={isPast || isLessThan24Hours}
           onClick={() => {
             setBookingDate(() => date);
             setTransferData((prev) => ({
               ...prev,
-              price: price,
+              price: currentPrice,
               date: date.format("YYYY-MM-DD"),
             }));
           }}
         >
-          <p className={`flex flex-col gap-[1px] md:gap-1 text-[10px] md:text-base`}>
+          <p
+            className={`flex flex-col gap-[1px] text-[10px] md:gap-1 md:text-base`}
+          >
             <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
             {!isPast && !isLessThan24Hours ? (
-              <span>{price} €</span>
+              <span>{currentPrice} €</span>
             ) : (
               <span>N/A</span>
             )}
@@ -88,7 +109,11 @@ export const Calendar = () => {
   return (
     <div className="grid gap-4 p-6">
       <div className="my-6 flex w-full items-center justify-between gap-4">
-        <Button type="button" onClick={handlePreviousMonth} className="text-xs md:text-lg">
+        <Button
+          type="button"
+          onClick={handlePreviousMonth}
+          className="text-xs md:text-lg"
+        >
           Prev
         </Button>
         <p className="text-base md:text-xl">
@@ -96,7 +121,11 @@ export const Calendar = () => {
             ? currentDate.format("MMMM YYYY")
             : dayjs().format("MMMM YYYY")}
         </p>
-        <Button type="button" onClick={handleNextMonth} className="text-xs md:text-lg">
+        <Button
+          type="button"
+          onClick={handleNextMonth}
+          className="text-xs md:text-lg"
+        >
           Next
         </Button>
       </div>

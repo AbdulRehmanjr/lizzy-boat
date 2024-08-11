@@ -10,7 +10,7 @@ function Snorkeling() {
 
   return (
     <>
-      <h1 className={`my-5 text-2xl font-normal md:text-4xl`}>Choose between</h1>
+      <h1 className={`my-5 text-2xl font-normal md:text-4xl text-center`}>Choose between</h1>
       <HalfOrFullDay
         halfDayPrice="65€ per person"
         fullDayPrice="125€ per person"
