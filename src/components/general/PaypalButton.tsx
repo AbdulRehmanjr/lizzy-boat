@@ -75,6 +75,9 @@ export const PayPalButton = ({ state, setState, apiLinkEndpoint }: Props) => {
         child_4_8: 0,
         child_9_13: 0,
         child_4_11: 0,
+        total_no_of_people: 0,
+        boat: undefined,
+        mode: undefined,
       }));
       setDisable(() => true);
       router.push("/success");
@@ -97,8 +100,38 @@ export const PayPalButton = ({ state, setState, apiLinkEndpoint }: Props) => {
     return;
   };
 
+  const createDummySnorkelingOrder = async () => {
+    try {
+      const response = await axios.post("/api/order/test-snork", {
+        orderId: "abc2134213",
+        snorkeling: state,
+        formData: formData,
+      });
+      console.log("response", response);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast({
+          variant: "destructive",
+          description: error.message ?? "Error",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          description: "Something went wrong",
+        });
+      }
+    }
+  };
+
   return (
     <>
+      {/* <button
+        onClick={() => {
+          createDummySnorkelingOrder();
+        }}
+      >
+        Add Booking
+      </button> */}
       <PayPalButtons
         disabled={isDisable || !isReady}
         createOrder={(data, _action) => createOrder(data)}

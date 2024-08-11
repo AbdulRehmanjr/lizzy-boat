@@ -67,6 +67,7 @@ model LizzyTransferBooking {
     blockTime   String                @default("none-none")
     date        String                @default("none")
     price       String                @default("none")
+    mode        String                @default("none")
     isRefunded  Boolean               @default(false)
     paypal      LizzyPayPalBoookingInfo @relation(fields: [paypalId], references: [paypalBoookingId], onDelete: Cascade)
     paypalId    String

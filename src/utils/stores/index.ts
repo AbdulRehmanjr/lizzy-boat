@@ -59,6 +59,8 @@ const snorkeingInitial: SnorkelingBookingProps = {
   child_4_8: 0,
   child_9_13: 0,
   child_4_11: 0,
+  total_no_of_people: 0,
+  boat: undefined,
 };
 
 const formInitial: FormProps = {

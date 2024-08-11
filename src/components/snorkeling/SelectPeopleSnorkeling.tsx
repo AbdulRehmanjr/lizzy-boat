@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import { Minus, Plus } from "lucide-react";
 import clsx from "clsx";
 import Link from "next/link";
@@ -9,6 +9,30 @@ import { SnorkelingAtom } from "~/utils/stores";
 
 const SelectPeopleSnorkeling = () => {
   const [snorkeling, setSnorkeling] = useAtom(SnorkelingAtom);
+
+  const totalPeople = useMemo(() => {
+    let totalPeople = 0;
+    if (snorkeling.daySlot === "half_day") {
+      totalPeople =
+        (snorkeling.adult ?? 0) +
+        (snorkeling.child_0_3 ?? 0) +
+        (snorkeling.child_4_8 ?? 0) +
+        (snorkeling.child_9_13 ?? 0);
+    } else {
+      totalPeople =
+        (snorkeling.adult ?? 0) +
+        (snorkeling.child_0_3 ?? 0) +
+        (snorkeling.child_4_11 ?? 0);
+    }
+    setSnorkeling({ ...snorkeling, total_no_of_people: totalPeople });
+  }, [
+    snorkeling.adult,
+    snorkeling.child_0_3,
+    snorkeling.child_4_11,
+    snorkeling.child_4_8,
+    snorkeling.child_9_13,
+    snorkeling.daySlot,
+  ]);
 
   return (
     <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
@@ -32,6 +56,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     adult: (snorkeling.adult ?? 0) - 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) - 1,
                   });
                 }}
               >
@@ -43,6 +69,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     adult: (snorkeling.adult ?? 0) + 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) + 1,
                   });
                 }}
               >
@@ -69,6 +97,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     child_0_3: (snorkeling.child_0_3 ?? 0) - 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) - 1,
                   });
                 }}
               >
@@ -82,6 +112,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     child_0_3: (snorkeling.child_0_3 ?? 0) + 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) + 1,
                   });
                 }}
               >
@@ -108,6 +140,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     child_4_8: (snorkeling.child_4_8 ?? 0) - 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) - 1,
                   });
                 }}
               >
@@ -121,6 +155,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     child_4_8: (snorkeling.child_4_8 ?? 0) + 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) + 1,
                   });
                 }}
               >
@@ -147,6 +183,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     child_9_13: (snorkeling.child_9_13 ?? 0) - 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) - 1,
                   });
                 }}
               >
@@ -160,6 +198,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     child_9_13: (snorkeling.child_9_13 ?? 0) + 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) + 1,
                   });
                 }}
               >
@@ -188,6 +228,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     adult: (snorkeling.adult ?? 0) - 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) - 1,
                   });
                 }}
               >
@@ -199,6 +241,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     adult: (snorkeling.adult ?? 0) + 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) + 1,
                   });
                 }}
               >
@@ -225,6 +269,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     child_0_3: (snorkeling.child_0_3 ?? 0) - 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) - 1,
                   });
                 }}
               >
@@ -238,6 +284,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     child_0_3: (snorkeling.child_0_3 ?? 0) + 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) + 1,
                   });
                 }}
               >
@@ -264,6 +312,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     child_4_11: (snorkeling.child_4_11 ?? 0) - 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) - 1,
                   });
                 }}
               >
@@ -277,6 +327,8 @@ const SelectPeopleSnorkeling = () => {
                   setSnorkeling({
                     ...snorkeling,
                     child_4_11: (snorkeling.child_4_11 ?? 0) + 1,
+                    total_no_of_people:
+                      (snorkeling.total_no_of_people ?? 0) + 1,
                   });
                 }}
               >
