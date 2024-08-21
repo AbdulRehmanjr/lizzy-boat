@@ -19,6 +19,13 @@ export const Calendar = () => {
     booking_time: fishingData.timeSlot ?? "",
   });
 
+  const blockBookingsAccordingToBoats = api.booking.getBlockedDates.useQuery({
+    numberOfPeople: fishingData.adult ?? 0 + fishingData.infants ?? 0,
+    bookingType: "fishing",
+    time: fishingData.timeSlot ?? "",
+  });
+  console.log(blockBookingsAccordingToBoats);
+
   const currentMonth: Dayjs[][] = useMemo(() => {
     const currentMonth = currentDate ?? dayjs();
     const firstDay = currentMonth.clone().startOf("month").day();
@@ -38,14 +45,34 @@ export const Calendar = () => {
 
   const currentPrice = useMemo(() => {
     const totalPeople = fishingData.adult ?? 1;
+    let price = 0;
     switch (fishingData.daySlot) {
       case "full_day":
-        return totalPeople * 1100;
+        if (totalPeople === 1) {
+          price = 1100 / 2;
+        } else if (totalPeople === 2) {
+          price = 1100;
+        } else {
+          price = 1100 + (totalPeople - 2) * 40;
+        }
+        // return totalPeople  * 1100;
+        break;
+
       case "half_day":
-        return totalPeople * 550;
+        if (totalPeople === 1) {
+          price = 550 / 2;
+        } else if (totalPeople === 2) {
+          price = 550;
+        } else {
+          price = 550 + (totalPeople - 2) * 40;
+        }
+        break;
+      // return totalPeople * 550;
       default:
+        price = 0;
         return 0;
     }
+    return price;
   }, [fishingData.adult, fishingData.daySlot]);
 
   const handlePreviousMonth = () => {
@@ -80,7 +107,7 @@ export const Calendar = () => {
     const isReserved = bookingBlock.data?.some(
       (blockDate) => date.format("YYYY-MM-DD") === blockDate,
     );
-    console.log(isReserved);
+    // console.log(isReserved);
     const isTimeOver = isBookingTimeOver(date);
 
     return (

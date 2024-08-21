@@ -48,6 +48,7 @@ export const Calendar = () => {
     if (!date) return <td className="border-[1px] border-[#1f788b]"></td>;
 
     const isPast = date.isBefore(dayjs(), "day");
+    const total_people = sunsetData.adult ?? 0;
     const price = sunsetData.adult <= 4 ? 100 : 100 + sunsetData.adult * 30;
 
     const isReserved = bookingBlock.data?.some(

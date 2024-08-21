@@ -40,9 +40,13 @@ export const Calendar = () => {
     const totalPeople = privateData.adult ?? 1;
     switch (privateData.daySlot) {
       case "full_day":
-        return totalPeople * 800;
+        return totalPeople <= 4
+          ? 200 * totalPeople
+          : (totalPeople - 4) * 40 + 800;
       case "half_day":
-        return totalPeople * 400;
+        return totalPeople <= 4
+          ? 100 * totalPeople
+          : (totalPeople - 4) * 40 + 400;
       default:
         return 0;
     }

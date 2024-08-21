@@ -1,0 +1,17 @@
+group booking OK
+sunset 
+transfer
+charter
+snorkeling
+fishing
+
+
+half day booking for snorkeling  ( in the calendar )
+
+api call get remaining capacity
+isAvailable booking
+
+
+
+can a boat booked as charter is for only one persons
+

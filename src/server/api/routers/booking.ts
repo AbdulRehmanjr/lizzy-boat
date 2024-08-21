@@ -5,6 +5,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { TRPCClientError } from "@trpc/client";
 import { randomUUID } from "crypto";
 import dayjs from "dayjs";
+import { canMakeBooking } from "~/utils/funs";
 
 export const BookingRouter = createTRPCRouter({
   createPayPalBooking: publicProcedure
@@ -580,4 +581,719 @@ export const BookingRouter = createTRPCRouter({
         throw new Error("Something went wrong while fetching blocked dates.");
       }
     }),
+  getBlockedDates: publicProcedure
+    .input(
+      z.object({
+        numberOfPeople: z.number().optional(),
+        bookingType: z.string().optional(),
+        time: z.string().optional(),
+        boat: z.string().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const blockDatesSet = new Set<string>();
+        const allBookingDatesReturnArray: {
+          date: string;
+          isBlocked: boolean;
+          boatAvailable: string;
+        }[] = [];
+        const today = dayjs().format("YYYY-MM-DD");
+
+        // Fetch all bookings from today onward
+        const bookings: AdditionalBooking[] =
+          await ctx.db.lizzyAdditionalBookingInfo.findMany({
+            where: {
+              date: {
+                gte: today,
+              },
+            },
+            select: {
+              date: true,
+              boat: true,
+              noOfPeople: true,
+              bookingType: true,
+              time: true,
+            },
+          });
+
+        const groupedBookings = bookings.reduce<
+          Record<string, AdditionalBooking[]>
+        >((acc, booking) => {
+          const date = booking.date;
+          if (!acc[date]) {
+            acc[date] = []; // Initialize a new array for each date
+          }
+          acc[date].push(booking); // Add the booking to the corresponding date's array
+          return acc;
+        }, {});
+
+        Object.entries(groupedBookings).forEach(([date, bookingsArray]) => {
+          console.log(`Bookings for ${date}:`, bookingsArray);
+          console.log(summarizeBookings(bookingsArray));
+          const tenSeaterBookings = bookingsArray.filter(
+            (booking) => booking.boat === "ten_seater",
+          );
+          const seventeenSeaterBookings = bookingsArray.filter(
+            (booking) => booking.boat === "seventeen_seater",
+          );
+          let isTenSeaterBlocked = false;
+          let isSeventeenSeaterBlocked = false;
+          // ten seater logic
+          if (tenSeaterBookings.length > 0) {
+            let isMorningBlocked = false;
+            let isAfternoonBlocked = false;
+            let isFullDayBlocked = false;
+            const transferBookings = tenSeaterBookings.filter(
+              (booking) => booking.bookingType === "transfer",
+            );
+            const fullDayBookings = tenSeaterBookings.filter(
+              (booking) => booking.time === "full_day",
+            );
+            const morningBookings = tenSeaterBookings.filter(
+              (booking) => booking.time === "morning",
+            );
+            const afternoonBookings = tenSeaterBookings.filter(
+              (booking) => booking.time === "afternoon",
+            );
+            if (transferBookings.length > 0) {
+              isTenSeaterBlocked = true;
+            }
+
+            // charter bookings check
+            if (fullDayBookings.length > 0) {
+              const charterFullDayBookings = fullDayBookings.filter(
+                (booking) => booking.bookingType === "charter",
+              );
+              if (charterFullDayBookings.length > 0) {
+                isTenSeaterBlocked = input.bookingType !== "sunset";
+              }
+              // check for half day bookings as well
+              if (morningBookings.length > 0) {
+                const morningCharterBookings = morningBookings.filter(
+                  (booking) => booking.bookingType === "charter",
+                );
+                isMorningBlocked = morningCharterBookings.length > 0;
+              }
+              if (afternoonBookings.length > 0) {
+                const afternoonCharterBookings = afternoonBookings.filter(
+                  (booking) => booking.bookingType === "charter",
+                );
+                isAfternoonBlocked = afternoonCharterBookings.length > 0;
+              }
+            }
+            switch (input.bookingType) {
+              case "charter":
+                isTenSeaterBlocked =
+                  isMorningBlocked ||
+                  isAfternoonBlocked ||
+                  fullDayBookings.length > 0 ||
+                  isTenSeaterBlocked;
+                break;
+              case "snorkeling":
+                let fullDayCapacitySnorkeling = 10;
+                let morningSnorkelingCapacity = 10;
+                let afternoonSnorkelingCapacity = 10;
+                let isFullDayBlockedSnorkeling = false;
+                let isMorningBlockedSnorkeling = false;
+                let isAfternoonBlockedSnorkeling = false;
+                if (fullDayBookings.length > 0) {
+                  const isFullDayHaveOtherThanSnorkeling =
+                    fullDayBookings.filter(
+                      (booking) => booking.bookingType !== "snorkeling",
+                    );
+                  if (isFullDayHaveOtherThanSnorkeling.length > 0) {
+                    isFullDayBlockedSnorkeling = true;
+                  } else {
+                    const fullDaySnorkelingBookings = fullDayBookings.filter(
+                      (booking) => booking.bookingType === "snorkeling",
+                    );
+                    const morningSnorkelingBookings = morningBookings.filter(
+                      (booking) => booking.bookingType === "snorkeling",
+                    );
+                    const afternoonSnorkelingBookings =
+                      afternoonBookings.filter(
+                        (booking) => booking.bookingType === "snorkeling",
+                      );
+                    if (morningSnorkelingBookings.length > 0) {
+                      morningSnorkelingBookings.map((booking) => {
+                        morningSnorkelingCapacity =
+                          morningSnorkelingCapacity - booking.noOfPeople;
+                      });
+                    }
+                    if (afternoonSnorkelingBookings.length > 0) {
+                      afternoonSnorkelingBookings.map((booking) => {
+                        afternoonSnorkelingCapacity =
+                          afternoonSnorkelingCapacity - booking.noOfPeople;
+                      });
+                    }
+                    if (fullDaySnorkelingBookings.length > 0) {
+                      const capacityInTheFullDayBooking =
+                        fullDaySnorkelingBookings.map((booking) => {
+                          fullDayCapacitySnorkeling =
+                            fullDayCapacitySnorkeling - booking.noOfPeople;
+                          morningSnorkelingCapacity =
+                            morningSnorkelingCapacity - booking.noOfPeople;
+                          afternoonSnorkelingCapacity =
+                            afternoonSnorkelingCapacity - booking.noOfPeople;
+                        });
+                      if (input.numberOfPeople) {
+                        let fullDayCanBookedCapacity = Math.min(
+                          fullDayCapacitySnorkeling,
+                          morningSnorkelingCapacity,
+                          afternoonSnorkelingCapacity,
+                        );
+                        isFullDayBlockedSnorkeling =
+                          fullDayCanBookedCapacity < input?.numberOfPeople;
+                      }
+                      break;
+                    }
+                  }
+                }
+                if (morningBookings.length > 0 && input.time === "morning") {
+                  const morningSnorkelingBookings = morningBookings.filter(
+                    (booking) => booking.bookingType === "snorkeling",
+                  );
+                  if (
+                    morningSnorkelingBookings.length > 0 &&
+                    input.numberOfPeople
+                  ) {
+                    isMorningBlockedSnorkeling =
+                      Math.min(
+                        morningSnorkelingCapacity,
+                        fullDayCapacitySnorkeling,
+                      ) < input?.numberOfPeople;
+                  }
+                }
+                if (
+                  afternoonBookings.length > 0 &&
+                  input.time === "afternoon"
+                ) {
+                  const afternoonSnorkelingBookings = afternoonBookings.filter(
+                    (booking) => booking.bookingType === "snorkeling",
+                  );
+                  if (
+                    afternoonSnorkelingBookings.length > 0 &&
+                    input.numberOfPeople
+                  ) {
+                    isAfternoonBlockedSnorkeling =
+                      Math.min(
+                        afternoonSnorkelingCapacity,
+                        fullDayCapacitySnorkeling,
+                      ) < input?.numberOfPeople;
+                  }
+                }
+                if (input.time === "morning") {
+                  isTenSeaterBlocked =
+                    isMorningBlockedSnorkeling ||
+                    isFullDayBlockedSnorkeling ||
+                    isTenSeaterBlocked;
+                } else if (input.time === "afternoon") {
+                  isTenSeaterBlocked =
+                    isAfternoonBlockedSnorkeling ||
+                    isFullDayBlockedSnorkeling ||
+                    isTenSeaterBlocked;
+                } else {
+                  isTenSeaterBlocked = isFullDayBlockedSnorkeling;
+                }
+                break;
+
+              // Case Fishing
+              case "fishing":
+                let fullDayCapacityFishing = 10;
+                let morningFishingCapacity = 10;
+                let afternoonFishingCapacity = 10;
+                let isFullDayBlockedFishing = false;
+                let isMorningBlockedFishing = false;
+                let isAfternoonBlockedFishing = false;
+                if (fullDayBookings.length > 0) {
+                  const isFullDayHaveOtherThanfishing = fullDayBookings.filter(
+                    (booking) => booking.bookingType !== "fishing",
+                  );
+                  if (isFullDayHaveOtherThanfishing.length > 0) {
+                    isFullDayBlockedFishing = true;
+                  } else {
+                    const fullDayfishingBookings = fullDayBookings.filter(
+                      (booking) => booking.bookingType === "fishing",
+                    );
+                    const morningfishingBookings = morningBookings.filter(
+                      (booking) => booking.bookingType === "fishing",
+                    );
+                    const afternoonfishingBookings = afternoonBookings.filter(
+                      (booking) => booking.bookingType === "fishing",
+                    );
+                    if (morningfishingBookings.length > 0) {
+                      morningfishingBookings.map((booking) => {
+                        morningFishingCapacity =
+                          morningFishingCapacity - booking.noOfPeople;
+                      });
+                    }
+                    if (afternoonfishingBookings.length > 0) {
+                      afternoonfishingBookings.map((booking) => {
+                        afternoonFishingCapacity =
+                          afternoonFishingCapacity - booking.noOfPeople;
+                      });
+                    }
+                    if (fullDayfishingBookings.length > 0) {
+                      const capacityInTheFullDayBooking =
+                        fullDayfishingBookings.map((booking) => {
+                          fullDayCapacityFishing =
+                            fullDayCapacityFishing - booking.noOfPeople;
+                          morningFishingCapacity =
+                            morningFishingCapacity - booking.noOfPeople;
+                          afternoonFishingCapacity =
+                            afternoonFishingCapacity - booking.noOfPeople;
+                        });
+                      if (input.numberOfPeople) {
+                        let fullDayCanBookedCapacity = Math.min(
+                          fullDayCapacityFishing,
+                          morningFishingCapacity,
+                          afternoonFishingCapacity,
+                        );
+                        isFullDayBlockedFishing =
+                          fullDayCanBookedCapacity < input?.numberOfPeople;
+                      }
+                      break;
+                    }
+                  }
+                }
+                if (morningBookings.length > 0 && input.time === "morning") {
+                  const morningfishingBookings = morningBookings.filter(
+                    (booking) => booking.bookingType === "fishing",
+                  );
+                  if (
+                    morningfishingBookings.length > 0 &&
+                    input.numberOfPeople
+                  ) {
+                    isMorningBlockedFishing =
+                      Math.min(morningFishingCapacity, fullDayCapacityFishing) <
+                      input?.numberOfPeople;
+                  }
+                }
+                if (
+                  afternoonBookings.length > 0 &&
+                  input.time === "afternoon"
+                ) {
+                  const afternoonfishingBookings = afternoonBookings.filter(
+                    (booking) => booking.bookingType === "fishing",
+                  );
+                  if (
+                    afternoonfishingBookings.length > 0 &&
+                    input.numberOfPeople
+                  ) {
+                    isAfternoonBlockedFishing =
+                      Math.min(
+                        afternoonFishingCapacity,
+                        fullDayCapacityFishing,
+                      ) < input?.numberOfPeople;
+                  }
+                }
+                if (input.time === "morning") {
+                  isTenSeaterBlocked =
+                    isMorningBlockedFishing ||
+                    isFullDayBlockedFishing ||
+                    isTenSeaterBlocked;
+                } else if (input.time === "afternoon") {
+                  isTenSeaterBlocked =
+                    isAfternoonBlockedFishing ||
+                    isFullDayBlockedFishing ||
+                    isTenSeaterBlocked;
+                } else {
+                  isTenSeaterBlocked = isFullDayBlockedFishing;
+                }
+                break;
+
+              case "sunset":
+                let sunsetCapacity = 10;
+                let isSunsetBlocked = false;
+                // check for sunset booking
+                const sunsetBookings = tenSeaterBookings.filter(
+                  (booking) => booking.bookingType === "sunset",
+                );
+                if (sunsetBookings.length > 0) {
+                  sunsetBookings.map((booking) => {
+                    sunsetCapacity = sunsetCapacity - booking.noOfPeople;
+                  });
+                  if (input.numberOfPeople) {
+                    isSunsetBlocked = sunsetCapacity < input?.numberOfPeople;
+                  }
+                }
+                isTenSeaterBlocked = isSunsetBlocked || isTenSeaterBlocked;
+                break;
+              default:
+                break;
+            }
+          }
+          // Seventeen seater logic
+          if (seventeenSeaterBookings.length > 0) {
+            let isMorningBlocked = false;
+            let isAfternoonBlocked = false;
+            let isFullDayBlocked = false;
+            const transferBookings = seventeenSeaterBookings.filter(
+              (booking) => booking.bookingType === "transfer",
+            );
+            const fullDayBookings = seventeenSeaterBookings.filter(
+              (booking) => booking.time === "full_day",
+            );
+            const morningBookings = seventeenSeaterBookings.filter(
+              (booking) => booking.time === "morning",
+            );
+            const afternoonBookings = seventeenSeaterBookings.filter(
+              (booking) => booking.time === "afternoon",
+            );
+            if (transferBookings.length > 0) {
+              isSeventeenSeaterBlocked = true;
+            }
+
+            // charter bookings check
+            if (fullDayBookings.length > 0) {
+              const charterFullDayBookings = fullDayBookings.filter(
+                (booking) => booking.bookingType === "charter",
+              );
+              if (charterFullDayBookings.length > 0) {
+                isSeventeenSeaterBlocked = input.bookingType !== "sunset";
+              }
+              // check for half day bookings as well
+              if (morningBookings.length > 0) {
+                const morningCharterBookings = morningBookings.filter(
+                  (booking) => booking.bookingType === "charter",
+                );
+                isMorningBlocked = morningCharterBookings.length > 0;
+              }
+              if (afternoonBookings.length > 0) {
+                const afternoonCharterBookings = afternoonBookings.filter(
+                  (booking) => booking.bookingType === "charter",
+                );
+                isAfternoonBlocked = afternoonCharterBookings.length > 0;
+              }
+            }
+            switch (input.bookingType) {
+              case "charter":
+                isSeventeenSeaterBlocked =
+                  isMorningBlocked ||
+                  isAfternoonBlocked ||
+                  fullDayBookings.length > 0 ||
+                  isSeventeenSeaterBlocked;
+                break;
+              case "snorkeling":
+                let fullDayCapacitySnorkeling = 17;
+                let morningSnorkelingCapacity = 17;
+                let afternoonSnorkelingCapacity = 17;
+                let isFullDayBlockedSnorkeling = false;
+                let isMorningBlockedSnorkeling = false;
+                let isAfternoonBlockedSnorkeling = false;
+                if (fullDayBookings.length > 0) {
+                  const isFullDayHaveOtherThanSnorkeling =
+                    fullDayBookings.filter(
+                      (booking) => booking.bookingType !== "snorkeling",
+                    );
+                  if (isFullDayHaveOtherThanSnorkeling.length > 0) {
+                    isFullDayBlockedSnorkeling = true;
+                  } else {
+                    const fullDaySnorkelingBookings = fullDayBookings.filter(
+                      (booking) => booking.bookingType === "snorkeling",
+                    );
+                    const morningSnorkelingBookings = morningBookings.filter(
+                      (booking) => booking.bookingType === "snorkeling",
+                    );
+                    const afternoonSnorkelingBookings =
+                      afternoonBookings.filter(
+                        (booking) => booking.bookingType === "snorkeling",
+                      );
+                    if (morningSnorkelingBookings.length > 0) {
+                      morningSnorkelingBookings.map((booking) => {
+                        morningSnorkelingCapacity =
+                          morningSnorkelingCapacity - booking.noOfPeople;
+                      });
+                    }
+                    if (afternoonSnorkelingBookings.length > 0) {
+                      afternoonSnorkelingBookings.map((booking) => {
+                        afternoonSnorkelingCapacity =
+                          afternoonSnorkelingCapacity - booking.noOfPeople;
+                      });
+                    }
+                    if (fullDaySnorkelingBookings.length > 0) {
+                      const capacityInTheFullDayBooking =
+                        fullDaySnorkelingBookings.map((booking) => {
+                          fullDayCapacitySnorkeling =
+                            fullDayCapacitySnorkeling - booking.noOfPeople;
+                          morningSnorkelingCapacity =
+                            morningSnorkelingCapacity - booking.noOfPeople;
+                          afternoonSnorkelingCapacity =
+                            afternoonSnorkelingCapacity - booking.noOfPeople;
+                        });
+                      if (input.numberOfPeople) {
+                        let fullDayCanBookedCapacity = Math.min(
+                          fullDayCapacitySnorkeling,
+                          morningSnorkelingCapacity,
+                          afternoonSnorkelingCapacity,
+                        );
+                        isFullDayBlockedSnorkeling =
+                          fullDayCanBookedCapacity < input?.numberOfPeople;
+                      }
+                      break;
+                    }
+                  }
+                }
+                if (morningBookings.length > 0 && input.time === "morning") {
+                  const morningSnorkelingBookings = morningBookings.filter(
+                    (booking) => booking.bookingType === "snorkeling",
+                  );
+                  if (
+                    morningSnorkelingBookings.length > 0 &&
+                    input.numberOfPeople
+                  ) {
+                    isMorningBlockedSnorkeling =
+                      Math.min(
+                        morningSnorkelingCapacity,
+                        fullDayCapacitySnorkeling,
+                      ) < input?.numberOfPeople;
+                  }
+                }
+                if (
+                  afternoonBookings.length > 0 &&
+                  input.time === "afternoon"
+                ) {
+                  const afternoonSnorkelingBookings = afternoonBookings.filter(
+                    (booking) => booking.bookingType === "snorkeling",
+                  );
+                  if (
+                    afternoonSnorkelingBookings.length > 0 &&
+                    input.numberOfPeople
+                  ) {
+                    isAfternoonBlockedSnorkeling =
+                      Math.min(
+                        afternoonSnorkelingCapacity,
+                        fullDayCapacitySnorkeling,
+                      ) < input?.numberOfPeople;
+                  }
+                }
+                if (input.time === "morning") {
+                  isSeventeenSeaterBlocked =
+                    isMorningBlockedSnorkeling ||
+                    isFullDayBlockedSnorkeling ||
+                    isSeventeenSeaterBlocked;
+                } else if (input.time === "afternoon") {
+                  isSeventeenSeaterBlocked =
+                    isAfternoonBlockedSnorkeling ||
+                    isFullDayBlockedSnorkeling ||
+                    isSeventeenSeaterBlocked;
+                } else {
+                  isSeventeenSeaterBlocked = isFullDayBlockedSnorkeling;
+                }
+                break;
+
+              // Case Fishing
+              case "fishing":
+                let fullDayCapacityFishing = 17;
+                let morningFishingCapacity = 17;
+                let afternoonFishingCapacity = 17;
+                let isFullDayBlockedFishing = false;
+                let isMorningBlockedFishing = false;
+                let isAfternoonBlockedFishing = false;
+                if (fullDayBookings.length > 0) {
+                  const isFullDayHaveOtherThanfishing = fullDayBookings.filter(
+                    (booking) => booking.bookingType !== "fishing",
+                  );
+                  if (isFullDayHaveOtherThanfishing.length > 0) {
+                    isFullDayBlockedFishing = true;
+                  } else {
+                    const fullDayfishingBookings = fullDayBookings.filter(
+                      (booking) => booking.bookingType === "fishing",
+                    );
+                    const morningfishingBookings = morningBookings.filter(
+                      (booking) => booking.bookingType === "fishing",
+                    );
+                    const afternoonfishingBookings = afternoonBookings.filter(
+                      (booking) => booking.bookingType === "fishing",
+                    );
+                    if (morningfishingBookings.length > 0) {
+                      morningfishingBookings.map((booking) => {
+                        morningFishingCapacity =
+                          morningFishingCapacity - booking.noOfPeople;
+                      });
+                    }
+                    if (afternoonfishingBookings.length > 0) {
+                      afternoonfishingBookings.map((booking) => {
+                        afternoonFishingCapacity =
+                          afternoonFishingCapacity - booking.noOfPeople;
+                      });
+                    }
+                    if (fullDayfishingBookings.length > 0) {
+                      const capacityInTheFullDayBooking =
+                        fullDayfishingBookings.map((booking) => {
+                          fullDayCapacityFishing =
+                            fullDayCapacityFishing - booking.noOfPeople;
+                          morningFishingCapacity =
+                            morningFishingCapacity - booking.noOfPeople;
+                          afternoonFishingCapacity =
+                            afternoonFishingCapacity - booking.noOfPeople;
+                        });
+                      if (input.numberOfPeople) {
+                        let fullDayCanBookedCapacity = Math.min(
+                          fullDayCapacityFishing,
+                          morningFishingCapacity,
+                          afternoonFishingCapacity,
+                        );
+                        isFullDayBlockedFishing =
+                          fullDayCanBookedCapacity < input?.numberOfPeople;
+                      }
+                      break;
+                    }
+                  }
+                }
+                if (morningBookings.length > 0 && input.time === "morning") {
+                  const morningfishingBookings = morningBookings.filter(
+                    (booking) => booking.bookingType === "fishing",
+                  );
+                  if (
+                    morningfishingBookings.length > 0 &&
+                    input.numberOfPeople
+                  ) {
+                    isMorningBlockedFishing =
+                      Math.min(morningFishingCapacity, fullDayCapacityFishing) <
+                      input?.numberOfPeople;
+                  }
+                }
+                if (
+                  afternoonBookings.length > 0 &&
+                  input.time === "afternoon"
+                ) {
+                  const afternoonfishingBookings = afternoonBookings.filter(
+                    (booking) => booking.bookingType === "fishing",
+                  );
+                  if (
+                    afternoonfishingBookings.length > 0 &&
+                    input.numberOfPeople
+                  ) {
+                    isAfternoonBlockedFishing =
+                      Math.min(
+                        afternoonFishingCapacity,
+                        fullDayCapacityFishing,
+                      ) < input?.numberOfPeople;
+                  }
+                }
+                if (input.time === "morning") {
+                  isSeventeenSeaterBlocked =
+                    isMorningBlockedFishing ||
+                    isFullDayBlockedFishing ||
+                    isSeventeenSeaterBlocked;
+                } else if (input.time === "afternoon") {
+                  isSeventeenSeaterBlocked =
+                    isAfternoonBlockedFishing ||
+                    isFullDayBlockedFishing ||
+                    isSeventeenSeaterBlocked;
+                } else {
+                  isSeventeenSeaterBlocked = isFullDayBlockedFishing;
+                }
+                break;
+
+              case "sunset":
+                let sunsetCapacity = 17;
+                let isSunsetBlocked = false;
+                // check for sunset booking
+                const sunsetBookings = seventeenSeaterBookings.filter(
+                  (booking) => booking.bookingType === "sunset",
+                );
+                if (sunsetBookings.length > 0) {
+                  sunsetBookings.map((booking) => {
+                    sunsetCapacity = sunsetCapacity - booking.noOfPeople;
+                  });
+                  if (input.numberOfPeople) {
+                    isSunsetBlocked = sunsetCapacity < input?.numberOfPeople;
+                  }
+                }
+                isSeventeenSeaterBlocked =
+                  isSunsetBlocked || isSeventeenSeaterBlocked;
+                break;
+              default:
+                break;
+            }
+          }
+          // logic if bloacked or not
+          const isBlocked = isTenSeaterBlocked || isSeventeenSeaterBlocked;
+          allBookingDatesReturnArray.push({
+            date: date,
+            isBlocked: isBlocked,
+            boatAvailable: isBlocked
+              ? "none"
+              : isTenSeaterBlocked
+                ? "seventeen_seater"
+                : "ten_seater",
+          });
+        });
+
+        return {
+          message: "ran successfully",
+          blockedDateSet: allBookingDatesReturnArray,
+        };
+      } catch (error) {
+        console.error(error);
+        throw new Error("Something went wrong while fetching blocked dates.");
+      }
+    }),
 });
+
+type BoatType = "ten_seater" | "seventeen_seater";
+
+function summarizeBookings(
+  bookings: AdditionalBooking[],
+): Record<BoatType, BookingSummary> {
+  const boatCapacity: Record<BoatType, number> = {
+    ten_seater: 10,
+    seventeen_seater: 17,
+  };
+
+  const summary: Record<BoatType, BookingSummary> = {
+    ten_seater: {
+      isBooked: false,
+      isCapacityAvailable: true,
+      bookingTypes: [],
+      totalNoOfPeople: 0,
+      capacity: 10,
+      morning: false,
+      afternoon: false,
+      full_day: false,
+    },
+    seventeen_seater: {
+      isBooked: false,
+      isCapacityAvailable: true,
+      bookingTypes: [],
+      totalNoOfPeople: 0,
+      capacity: 17,
+      morning: false,
+      afternoon: false,
+      full_day: false,
+    },
+  };
+
+  bookings.forEach((booking) => {
+    const boat = booking.boat as BoatType; // Type assertion
+
+    const boatSummary = summary[boat];
+
+    // Update booking information
+    boatSummary.isBooked = true;
+    boatSummary.totalNoOfPeople += booking.noOfPeople;
+    boatSummary.capacity = boatCapacity[boat] - boatSummary.totalNoOfPeople;
+    boatSummary.isCapacityAvailable = boatSummary.capacity > 0;
+
+    // Add booking type if not already present
+    if (!boatSummary.bookingTypes.includes(booking.bookingType)) {
+      boatSummary.bookingTypes.push(booking.bookingType);
+    }
+
+    // Update time slots
+    if (booking.time === "morning") {
+      boatSummary.morning = true;
+    } else if (booking.time === "afternoon") {
+      boatSummary.afternoon = true;
+    } else if (booking.time === "full_day") {
+      boatSummary.full_day = true;
+      boatSummary.morning = true; // Full day booking covers morning
+      boatSummary.afternoon = true; // Full day booking covers afternoon
+    }
+  });
+
+  return summary;
+}

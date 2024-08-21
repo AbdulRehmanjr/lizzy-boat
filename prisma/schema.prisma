@@ -16,18 +16,35 @@ model LizzyPayPalSellerInfo {
 }
 
 model LizzyPayPalBoookingInfo {
-    paypalBoookingId  String              @id @default(uuid())
-    paymentEmail      String              @default("")
-    captureId         String
-    payerId           String              @default("")
-    paymentId         String              @default("")
-    contactEmail      String              @default("")
+    paypalBoookingId      String                       @id @default(uuid())
+    paymentEmail          String                       @default("")
+    captureId             String
+    payerId               String                       @default("")
+    paymentId             String                       @default("")
+    contactEmail          String                       @default("")
     LizzyFishingBooking    LizzyFishingBooking[]
     LizzyTransferBooking   LizzyTransferBooking[]
     LizzySunsetBooking     LizzySunsetBooking[]
     LizzyPrivateBooking    LizzyPrivateBooking[]
     LizzySnorkelingBooking LizzySnorkelingBooking[]
+    LizzyAdditionalBooking LizzyAdditionalBookingInfo[] // Add this line
 }
+
+
+model LizzyAdditionalBookingInfo {
+    id                 String                       @id @default(uuid())
+    paypalBoookingId   String
+    date               String
+    boat               String
+    noOfPeople         Int
+    time               String
+    bookingType        String
+    paypalBooking      LizzyPayPalBoookingInfo      @relation(fields: [paypalBoookingId], references: [paypalBoookingId], onDelete: Cascade)
+
+    @@index([paypalBoookingId])
+}
+
+
 
 model LizzyFishingBooking {
     fishingId   String                @id @default(uuid())

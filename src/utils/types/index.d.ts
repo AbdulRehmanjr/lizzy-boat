@@ -106,3 +106,29 @@ type SelectPeopleAge = {
 };
 
 type SelectPeopleAgeList = Record<string, SelectPeopleAge[]>;
+type BoatType = "ten_seater" | "seventeen_seater";
+
+type AdditionalBooking = {
+  id: string;
+  paypalBoookingId: string;
+  date: string;
+  boat: string;
+  noOfPeople: number;
+  bookingType: string;
+  time: string;
+};
+
+interface BookingSummary {
+  isBooked: boolean;
+  isCapacityAvailable: boolean;
+  bookingTypes: string[];
+  totalNoOfPeople: number;
+  morning: boolean;
+  afternoon: boolean;
+  full_day: boolean;
+  // bookingTypes: string[];
+  capacity: number;
+}
+
+// { id: string; paypalBoookingId: string; date: string; boat: string; noOfPeople: number; time: string; bookingType: string;
+// date: string; bookingType: string; time: string; boat: string; noOfPeople: number;
