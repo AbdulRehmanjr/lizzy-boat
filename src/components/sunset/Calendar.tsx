@@ -16,6 +16,13 @@ export const Calendar = () => {
 
   const bookingBlock = api.booking.getSunsetBlockDates.useQuery();
 
+  const blockBookingsAccordingToBoats = api.booking.getBlockedDates.useQuery({
+    numberOfPeople: sunsetData.adult ?? 0 + sunsetData.infants ?? 0,
+    bookingType: "sunset",
+    time: "",
+  });
+  console.log(blockBookingsAccordingToBoats.data?.blockedDateSet);
+
   const currentMonth: Dayjs[][] = useMemo(() => {
     const currentMonth = currentDate || dayjs();
     const firstDay = currentMonth.clone().startOf("month").day();
@@ -55,6 +62,15 @@ export const Calendar = () => {
       (blockDate) => date.format("YYYY-MM-DD") === blockDate,
     );
 
+    // block check for booking if already booked
+    const bookingForCurrentDate =
+      blockBookingsAccordingToBoats.data?.blockedDateSet?.find(
+        (blockDate) => blockDate.date === date.format("YYYY-MM-DD"),
+      );
+    const isTodayBooked = bookingForCurrentDate
+      ? bookingForCurrentDate?.isBlocked
+      : false;
+
     // Check for hours left
     const now = dayjs();
     const hoursLeft = date.diff(now, "hour");
@@ -66,7 +82,7 @@ export const Calendar = () => {
           variant={"outline"}
           type="button"
           className={`absolute left-0 top-0 h-full w-full p-0 ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
-          disabled={isPast || isLessThan24Hours || isReserved}
+          disabled={isPast || isLessThan24Hours || isReserved || isTodayBooked}
           onClick={() => {
             setBookingDate(() => date);
             setSunsetData((prev) => ({
@@ -78,7 +94,7 @@ export const Calendar = () => {
         >
           <p className={`flex flex-col gap-[1px] text-[10px] md:text-base`}>
             <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
-            {!isPast && !isLessThan24Hours && !isReserved ? (
+            {!isPast && !isLessThan24Hours && !isReserved && !isTodayBooked ? (
               <span>{price} €</span>
             ) : (
               <span>N/A</span>

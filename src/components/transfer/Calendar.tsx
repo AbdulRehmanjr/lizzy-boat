@@ -7,12 +7,20 @@ import { useMemo, useState } from "react";
 import { TransferAtom } from "~/utils/stores";
 import { Button } from "../general/Button";
 import clsx from "clsx";
+import { api } from "~/trpc/react";
 
 export const Calendar = () => {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
   const [bookingDate, setBookingDate] = useState<Dayjs>();
   const [transferData, setTransferData] = useAtom(TransferAtom);
+
+  const blockBookingsAccordingToBoats = api.booking.getBlockedDates.useQuery({
+    numberOfPeople: transferData.adult ?? 0 + transferData.infants ?? 0,
+    bookingType: "transfer",
+    time: "",
+  });
+  console.log(blockBookingsAccordingToBoats.data?.blockedDateSet);
 
   const currentMonth: Dayjs[][] = useMemo(() => {
     const currentMonth = currentDate || dayjs();
@@ -84,6 +92,15 @@ export const Calendar = () => {
     const hoursLeft = date.diff(now, "hour");
     const isLessThan24Hours = hoursLeft < 24;
 
+    // block check for booking if already booked
+    const bookingForCurrentDate =
+      blockBookingsAccordingToBoats.data?.blockedDateSet?.find(
+        (blockDate) => blockDate.date === date.format("YYYY-MM-DD"),
+      );
+    const isTodayBooked = bookingForCurrentDate
+      ? bookingForCurrentDate?.isBlocked
+      : false;
+
     return (
       <td
         className={clsx(
@@ -94,7 +111,7 @@ export const Calendar = () => {
           variant={"outline"}
           type="button"
           className={`absolute left-0 top-0 h-full w-full p-0 ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
-          disabled={isPast || isLessThan24Hours}
+          disabled={isPast || isLessThan24Hours || isTodayBooked}
           onClick={() => {
             setBookingDate(() => date);
             setTransferData((prev) => ({
@@ -108,7 +125,7 @@ export const Calendar = () => {
             className={`flex flex-col gap-[1px] text-[10px] md:gap-1 md:text-base`}
           >
             <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
-            {!isPast && !isLessThan24Hours ? (
+            {!isPast && !isLessThan24Hours && !isTodayBooked ? (
               <span>{currentPrice} €</span>
             ) : (
               <span>N/A</span>

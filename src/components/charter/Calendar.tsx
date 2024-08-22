@@ -12,12 +12,19 @@ export const Calendar = () => {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
   const [bookingDate, setBookingDate] = useState<Dayjs>();
-  const [privateData, setFishingData] = useAtom(PrivateAtom);
+  const [privateData, setPrivateCharterData] = useAtom(PrivateAtom);
 
   const bookingBlock = api.booking.getPrivateBlockDates.useQuery({
     booking_type: privateData.daySlot ?? "none",
     booking_time: privateData.timeSlot ?? "none",
   });
+
+  const blockBookingsAccordingToBoats = api.booking.getBlockedDates.useQuery({
+    numberOfPeople: privateData.adult ?? 0 + privateData.infants ?? 0,
+    bookingType: "charter",
+    time: privateData.timeSlot ?? "",
+  });
+  console.log(blockBookingsAccordingToBoats.data?.blockedDateSet);
 
   const currentMonth: Dayjs[][] = useMemo(() => {
     const currentMonth = currentDate ?? dayjs();
@@ -93,6 +100,15 @@ export const Calendar = () => {
       (blockDate) => date.format("YYYY-MM-DD") === blockDate.date,
     );
 
+    // block check for booking if already booked
+    const bookingForCurrentDate =
+      blockBookingsAccordingToBoats.data?.blockedDateSet?.find(
+        (blockDate) => blockDate.date === date.format("YYYY-MM-DD"),
+      );
+    const isTodayBooked = bookingForCurrentDate
+      ? bookingForCurrentDate?.isBlocked
+      : false;
+
     const isTimeOver = isBookingTimeOver(date);
 
     return (
@@ -104,10 +120,12 @@ export const Calendar = () => {
             bookingDate?.isSame(date) &&
             "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"
           }`}
-          disabled={isPast || isBlock || isReserved || isTimeOver}
+          disabled={
+            isPast || isBlock || isReserved || isTimeOver || isTodayBooked
+          }
           onClick={() => {
             setBookingDate(() => date);
-            setFishingData((prev) => ({
+            setPrivateCharterData((prev) => ({
               ...prev,
               price: currentPrice,
               date: date.format("YYYY-MM-DD"),
@@ -116,7 +134,11 @@ export const Calendar = () => {
         >
           <p className={`flex flex-col gap-[1px] text-[10px] md:text-base`}>
             <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
-            {!isPast && !isBlock && !isReserved && !isTimeOver ? (
+            {!isPast &&
+            !isBlock &&
+            !isReserved &&
+            !isTimeOver &&
+            !isTodayBooked ? (
               <span>{currentPrice} €</span>
             ) : (
               <span>N/A</span>

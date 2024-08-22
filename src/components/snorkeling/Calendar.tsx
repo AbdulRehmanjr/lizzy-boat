@@ -41,97 +41,110 @@ export const Calendar = () => {
 
   const allBookings = api.booking.getSnorkelingBoatsCapacity.useQuery();
 
+  const blockBookingsAccordingToBoats = api.booking.getBlockedDates.useQuery({
+    numberOfPeople:
+      snorkeling.adult ??
+      0 + snorkeling?.child_0_3 ??
+      0 + snorkeling?.child_4_11 ??
+      0 + snorkeling?.child_4_8 ??
+      0 + snorkeling?.child_9_13 ??
+      0,
+    bookingType: "snorkeling",
+    time: snorkeling.timeSlot ?? "",
+  });
+  console.log(blockBookingsAccordingToBoats.data?.blockedDateSet);
+
   // useMemo to calculate isCapacityFull and totalSeatsAvailable
-  const { isCapacityFull, totalSeatsAvailable } = useMemo(() => {
-    const full_day = allBookings.data?.full_day;
-    const half_day = allBookings.data?.half_day;
-    const half_day_morning = half_day?.filter(
-      (item) => item.time !== "morning",
-    );
-    const half_day_afternoon = half_day?.filter(
-      (item) => item.time !== "afternoon",
-    );
-    const total_bookings = [...(full_day || []), ...(half_day || [])];
-    const total_bookings_morning = [
-      ...(full_day || []),
-      ...(half_day_morning || []),
-    ];
-    const total_bookings_afternoon = [
-      ...(full_day || []),
-      ...(half_day_afternoon || []),
-    ];
-    const result_full_day = getTotal(
-      total_bookings,
-      "boat",
-      "total_no_of_people",
-    );
-    const result_half_day_morning = getTotal(
-      total_bookings_morning,
-      "boat",
-      "total_no_of_people",
-    );
-    const result_half_day_afternoon = getTotal(
-      total_bookings_afternoon,
-      "boat",
-      "total_no_of_people",
-    );
-    if (
-      snorkeling.daySlot === "half_day" &&
-      snorkeling.timeSlot === "afternoon"
-    ) {
-      const availableSeats = {
-        ten_seater: 10 - (result_half_day_afternoon.ten_seater ?? 0),
-        seventeen_seater:
-          17 - (result_half_day_afternoon.seventeen_seater ?? 0),
-      };
+  // const { isCapacityFull, totalSeatsAvailable } = useMemo(() => {
+  //   const full_day = allBookings.data?.full_day;
+  //   const half_day = allBookings.data?.half_day;
+  //   const half_day_morning = half_day?.filter(
+  //     (item) => item.time !== "morning",
+  //   );
+  //   const half_day_afternoon = half_day?.filter(
+  //     (item) => item.time !== "afternoon",
+  //   );
+  //   const total_bookings = [...(full_day || []), ...(half_day || [])];
+  //   const total_bookings_morning = [
+  //     ...(full_day || []),
+  //     ...(half_day_morning || []),
+  //   ];
+  //   const total_bookings_afternoon = [
+  //     ...(full_day || []),
+  //     ...(half_day_afternoon || []),
+  //   ];
+  //   const result_full_day = getTotal(
+  //     total_bookings,
+  //     "boat",
+  //     "total_no_of_people",
+  //   );
+  //   const result_half_day_morning = getTotal(
+  //     total_bookings_morning,
+  //     "boat",
+  //     "total_no_of_people",
+  //   );
+  //   const result_half_day_afternoon = getTotal(
+  //     total_bookings_afternoon,
+  //     "boat",
+  //     "total_no_of_people",
+  //   );
+  //   if (
+  //     snorkeling.daySlot === "half_day" &&
+  //     snorkeling.timeSlot === "afternoon"
+  //   ) {
+  //     const availableSeats = {
+  //       ten_seater: 10 - (result_half_day_afternoon.ten_seater ?? 0),
+  //       seventeen_seater:
+  //         17 - (result_half_day_afternoon.seventeen_seater ?? 0),
+  //     };
 
-      const total_seats =
-        (result_half_day_afternoon.ten_seater ?? 0) +
-        (result_half_day_afternoon.seventeen_seater ?? 0);
+  //     const total_seats =
+  //       (result_half_day_afternoon.ten_seater ?? 0) +
+  //       (result_half_day_afternoon.seventeen_seater ?? 0);
 
-      return {
-        isCapacityFull: total_seats > 27,
-        totalSeatsAvailable: availableSeats,
-      };
-    }
-    if (
-      snorkeling.daySlot === "half_day" &&
-      snorkeling.timeSlot === "morning"
-    ) {
-      const availableSeats = {
-        ten_seater: 10 - (result_half_day_morning.ten_seater ?? 0),
-        seventeen_seater: 17 - (result_half_day_morning.seventeen_seater ?? 0),
-      };
+  //     return {
+  //       isCapacityFull: total_seats > 27,
+  //       totalSeatsAvailable: availableSeats,
+  //     };
+  //   }
+  //   if (
+  //     snorkeling.daySlot === "half_day" &&
+  //     snorkeling.timeSlot === "morning"
+  //   ) {
+  //     const availableSeats = {
+  //       ten_seater: 10 - (result_half_day_morning.ten_seater ?? 0),
+  //       seventeen_seater: 17 - (result_half_day_morning.seventeen_seater ?? 0),
+  //     };
 
-      const total_seats =
-        (result_half_day_morning.ten_seater ?? 0) +
-        (result_half_day_morning.seventeen_seater ?? 0);
+  //     const total_seats =
+  //       (result_half_day_morning.ten_seater ?? 0) +
+  //       (result_half_day_morning.seventeen_seater ?? 0);
 
-      return {
-        isCapacityFull: total_seats > 27,
-        totalSeatsAvailable: availableSeats,
-      };
-    }
+  //     return {
+  //       isCapacityFull: total_seats > 27,
+  //       totalSeatsAvailable: availableSeats,
+  //     };
+  //   }
 
-    const availableSeats = {
-      ten_seater: 10 - (result_full_day.ten_seater ?? 0),
-      seventeen_seater: 17 - (result_full_day.seventeen_seater ?? 0),
-    };
+  //   const availableSeats = {
+  //     ten_seater: 10 - (result_full_day.ten_seater ?? 0),
+  //     seventeen_seater: 17 - (result_full_day.seventeen_seater ?? 0),
+  //   };
 
-    const total_seats =
-      (result_full_day.ten_seater ?? 0) +
-      (result_full_day.seventeen_seater ?? 0);
+  //   const total_seats =
+  //     (result_full_day.ten_seater ?? 0) +
+  //     (result_full_day.seventeen_seater ?? 0);
 
-    return {
-      isCapacityFull: total_seats > 27,
-      totalSeatsAvailable: availableSeats,
-    };
-  }, [allBookings.data]);
+  //   return {
+  //     isCapacityFull: total_seats > 27,
+  //     totalSeatsAvailable: availableSeats,
+  //   };
+  // }, [allBookings.data]);
 
   // useEffect to update seatsAvailable state
-  useEffect(() => {
-    setSeatsAvailable(totalSeatsAvailable);
-  }, [totalSeatsAvailable]);
+  // useEffect(() => {
+  //   setSeatsAvailable(totalSeatsAvailable);
+  // }, [totalSeatsAvailable]);
 
   // Memoized setBoat function
   const setBoat = useCallback(() => {
@@ -163,7 +176,7 @@ export const Calendar = () => {
   useEffect(() => {
     setBoat();
   }, [setBoat]);
-  console.log(">>>>>", isCapacityFull);
+  // console.log(">>>>>", isCapacityFull);
   const currentMonth: Dayjs[][] = useMemo(() => {
     const currentMonth = currentDate ?? dayjs();
     const firstDay = currentMonth.clone().startOf("month").day();
@@ -223,8 +236,8 @@ export const Calendar = () => {
 
   const isBlocked = (date: Dayjs): boolean => {
     const dayOfWeek = date.day();
-    if (snorkeling.daySlot == "full_day") return dayOfWeek === 6;
-    return dayOfWeek === 0 || dayOfWeek === 6;
+    if (snorkeling.daySlot == "full_day")
+      return dayOfWeek === 0 || dayOfWeek === 6;
     return false;
   };
 
@@ -256,15 +269,24 @@ export const Calendar = () => {
     const isTimeOver = isBookingTimeOver(date);
 
     // Disable the date if no boat is available
-    const isBoatUnavailable = snorkeling.boat === undefined;
+    const isBoatUnavailable = false;
+    // block check for booking if already booked
+    const bookingForCurrentDate =
+      blockBookingsAccordingToBoats.data?.blockedDateSet?.find(
+        (blockDate) => blockDate.date === date.format("YYYY-MM-DD"),
+      );
+    const isTodayBooked = bookingForCurrentDate
+      ? bookingForCurrentDate?.isBlocked
+      : false;
 
     const isDisabled =
       isPast ||
       isBlock ||
       isReserved ||
       isTimeOver ||
-      (isCapacityFull && date.isSame(currDate, "day")) ||
-      isBoatUnavailable;
+      // (isCapacityFull && date.isSame(currDate, "day")) ||
+      isBoatUnavailable ||
+      isTodayBooked;
 
     return (
       <td className="relative h-[2.5rem] w-fit border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]">
