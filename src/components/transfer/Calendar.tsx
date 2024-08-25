@@ -54,29 +54,17 @@ export const Calendar = () => {
     const total_people = transferData.adult ?? 0;
     switch (transferMode) {
       case "praslin_one_way":
-        return total_people <= 4
-          ? 31.25 * total_people
-          : (total_people - 4) * 40 + 125;
+        return total_people <= 4 ? 125 : (total_people - 4) * 40 + 125;
       case "praslin_back_n_forth":
-        return total_people <= 4
-          ? 50 * total_people
-          : (total_people - 4) * 40 + 200;
+        return total_people <= 4 ? 200 : (total_people - 4) * 40 + 200;
       case "felicity_one_way":
-        return total_people <= 4
-          ? 31.25 * total_people
-          : (total_people - 4) * 40 + 125;
+        return total_people <= 4 ? 125 : (total_people - 4) * 40 + 125;
       case "felicity_back_n_forth":
-        return total_people <= 4
-          ? 50 * total_people
-          : (total_people - 4) * 40 + 200;
+        return total_people <= 4 ? 200 : (total_people - 4) * 40 + 200;
       case "mahe_one_way":
-        return total_people <= 4
-          ? 100 * total_people
-          : (total_people - 4) * 40 + 400;
+        return total_people <= 4 ? 400 : (total_people - 4) * 40 + 400;
       case "mahe_back_n_forth":
-        return total_people <= 4
-          ? 175 * total_people
-          : (total_people - 4) * 40 + 700;
+        return total_people <= 4 ? 700 : (total_people - 4) * 40 + 700;
       default:
         return 0;
     }
@@ -101,6 +89,10 @@ export const Calendar = () => {
       ? bookingForCurrentDate?.isBlocked
       : false;
 
+    const boat = useMemo(() => {
+      return bookingForCurrentDate ? bookingForCurrentDate.boatAvailable : "";
+    }, [bookingForCurrentDate]);
+
     return (
       <td
         className={clsx(
@@ -118,6 +110,7 @@ export const Calendar = () => {
               ...prev,
               price: currentPrice,
               date: date.format("YYYY-MM-DD"),
+              boat: boat,
             }));
           }}
         >

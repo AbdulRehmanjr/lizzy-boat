@@ -56,7 +56,8 @@ export const Calendar = () => {
 
     const isPast = date.isBefore(dayjs(), "day");
     const total_people = sunsetData.adult ?? 0;
-    const price = sunsetData.adult <= 4 ? 100 : 100 + sunsetData.adult * 30;
+    const price =
+      sunsetData.adult <= 4 ? 130 : 100 + (sunsetData.adult - 4) * 30;
 
     const isReserved = bookingBlock.data?.some(
       (blockDate) => date.format("YYYY-MM-DD") === blockDate,
@@ -70,6 +71,10 @@ export const Calendar = () => {
     const isTodayBooked = bookingForCurrentDate
       ? bookingForCurrentDate?.isBlocked
       : false;
+
+    const boat = useMemo(() => {
+      return bookingForCurrentDate ? bookingForCurrentDate.boatAvailable : "";
+    }, [bookingForCurrentDate]);
 
     // Check for hours left
     const now = dayjs();
@@ -85,11 +90,12 @@ export const Calendar = () => {
           disabled={isPast || isLessThan24Hours || isReserved || isTodayBooked}
           onClick={() => {
             setBookingDate(() => date);
-            setSunsetData((prev) => ({
-              ...prev,
+            setSunsetData({
+              ...sunsetData,
               price: price,
               date: date.format("YYYY-MM-DD"),
-            }));
+              boat: boat,
+            });
           }}
         >
           <p className={`flex flex-col gap-[1px] text-[10px] md:text-base`}>

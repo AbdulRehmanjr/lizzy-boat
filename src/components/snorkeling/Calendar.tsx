@@ -279,6 +279,10 @@ export const Calendar = () => {
       ? bookingForCurrentDate?.isBlocked
       : false;
 
+    const boat = useMemo(() => {
+      return bookingForCurrentDate ? bookingForCurrentDate.boatAvailable : "";
+    }, [bookingForCurrentDate]);
+
     const isDisabled =
       isPast ||
       isBlock ||
@@ -304,6 +308,7 @@ export const Calendar = () => {
               ...prev,
               price: currentPrice,
               date: date.format("YYYY-MM-DD"),
+              boat: boat,
             }));
           }}
         >

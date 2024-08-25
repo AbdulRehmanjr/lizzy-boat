@@ -118,12 +118,18 @@ export async function POST(req: Request) {
   } catch (error) {
     if (error instanceof TRPCClientError) {
       console.error(error.message);
-      throw new AxiosError(error.message);
+      return NextResponse.json({ error: error.message }, { status: 500 });
     } else if (error instanceof AxiosError) {
       console.error(error.response?.data);
-      const err: string = error.response?.data.message;
+      const err: string = error.response?.data.message ?? "An error occurred";
       console.error(err);
-      throw new AxiosError(err);
+      return NextResponse.json({ error: err }, { status: 500 });
+    } else {
+      console.error("Unexpected error:", error);
+      return NextResponse.json(
+        { error: "An unexpected error occurred" },
+        { status: 500 },
+      );
     }
   }
 }

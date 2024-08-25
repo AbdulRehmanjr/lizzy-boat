@@ -370,6 +370,7 @@ export const BookingRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        console.log(input)
         const uuid = randomUUID().toString();
         const payPal = await ctx.db.lizzyPayPalBoookingInfo.create({
           data: {
@@ -394,6 +395,40 @@ export const BookingRouter = createTRPCRouter({
           },
         });
         return payPal.paypalBoookingId;
+      } catch (error) {
+        if (error instanceof TRPCClientError) {
+          console.error(error.message);
+          throw new Error(error.message);
+        }
+        console.log(error);
+        throw new Error("Something went wrong");
+      }
+    }),
+  addBookingData: publicProcedure
+    .input(
+      z.object({
+        paypalBoookingId: z.string(),
+        date: z.string(),
+        boat: z.string(),
+        noOfPeople: z.number(),
+        time: z.string(),
+        bookingType: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const uuid = randomUUID().toString();
+        const response = await ctx.db.lizzyAdditionalBookingInfo.create({
+          data: {
+            paypalBoookingId: input.paypalBoookingId,
+            date: input.date,
+            boat: input.boat,
+            noOfPeople: input.noOfPeople,
+            time: input.time,
+            bookingType: input.bookingType,
+          },
+        });
+        return response;
       } catch (error) {
         if (error instanceof TRPCClientError) {
           console.error(error.message);
@@ -643,7 +678,7 @@ export const BookingRouter = createTRPCRouter({
           if (tenSeaterBookings.length > 0) {
             let isMorningBlocked = false;
             let isAfternoonBlocked = false;
-            let isFullDayBlocked = false;
+            // let isFullDayBlocked = false;
             const transferBookings = tenSeaterBookings.filter(
               (booking) => booking.bookingType === "transfer",
             );
@@ -738,7 +773,7 @@ export const BookingRouter = createTRPCRouter({
                             afternoonSnorkelingCapacity - booking.noOfPeople;
                         });
                       if (input.numberOfPeople) {
-                        let fullDayCanBookedCapacity = Math.min(
+                        const fullDayCanBookedCapacity = Math.min(
                           fullDayCapacitySnorkeling,
                           morningSnorkelingCapacity,
                           afternoonSnorkelingCapacity,
@@ -845,7 +880,7 @@ export const BookingRouter = createTRPCRouter({
                             afternoonFishingCapacity - booking.noOfPeople;
                         });
                       if (input.numberOfPeople) {
-                        let fullDayCanBookedCapacity = Math.min(
+                        const fullDayCanBookedCapacity = Math.min(
                           fullDayCapacityFishing,
                           morningFishingCapacity,
                           afternoonFishingCapacity,
@@ -1023,7 +1058,7 @@ export const BookingRouter = createTRPCRouter({
                             afternoonSnorkelingCapacity - booking.noOfPeople;
                         });
                       if (input.numberOfPeople) {
-                        let fullDayCanBookedCapacity = Math.min(
+                        const fullDayCanBookedCapacity = Math.min(
                           fullDayCapacitySnorkeling,
                           morningSnorkelingCapacity,
                           afternoonSnorkelingCapacity,
@@ -1130,7 +1165,7 @@ export const BookingRouter = createTRPCRouter({
                             afternoonFishingCapacity - booking.noOfPeople;
                         });
                       if (input.numberOfPeople) {
-                        let fullDayCanBookedCapacity = Math.min(
+                        const fullDayCanBookedCapacity = Math.min(
                           fullDayCapacityFishing,
                           morningFishingCapacity,
                           afternoonFishingCapacity,
@@ -1211,7 +1246,7 @@ export const BookingRouter = createTRPCRouter({
             }
           }
           // logic if bloacked or not
-          const isBlocked = isTenSeaterBlocked || isSeventeenSeaterBlocked;
+          const isBlocked = isTenSeaterBlocked && isSeventeenSeaterBlocked;
           allBookingDatesReturnArray.push({
             date: date,
             isBlocked: isBlocked,

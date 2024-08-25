@@ -48,11 +48,11 @@ export const Calendar = () => {
     switch (privateData.daySlot) {
       case "full_day":
         return totalPeople <= 4
-          ? 200 * totalPeople
+          ? 800
           : (totalPeople - 4) * 40 + 800;
       case "half_day":
         return totalPeople <= 4
-          ? 100 * totalPeople
+          ? 400
           : (totalPeople - 4) * 40 + 400;
       default:
         return 0;
@@ -109,6 +109,10 @@ export const Calendar = () => {
       ? bookingForCurrentDate?.isBlocked
       : false;
 
+    const boat = useMemo(() => {
+      return bookingForCurrentDate ? bookingForCurrentDate.boatAvailable : "";
+    }, [bookingForCurrentDate]);
+
     const isTimeOver = isBookingTimeOver(date);
 
     return (
@@ -129,6 +133,7 @@ export const Calendar = () => {
               ...prev,
               price: currentPrice,
               date: date.format("YYYY-MM-DD"),
+              boat: boat,
             }));
           }}
         >

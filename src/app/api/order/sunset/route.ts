@@ -10,14 +10,14 @@ export async function POST(req: Request) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const {
       orderId,
-      sunsetData,
+      bookingData,
       formData,
     }: {
       orderId: string;
-      sunsetData: SunsetBookingProps;
+      bookingData: SunsetBookingProps;
       formData: FormProps;
     } = await req.json();
-
+    console.log(">>>>>👋 Date", bookingData.date);
     const username = env.PAYPAL_CLIENT;
     const password = env.PAYPAL_SECERT;
     const base64Credentials = Buffer.from(`${username}:${password}`).toString(
@@ -47,6 +47,7 @@ export async function POST(req: Request) {
       Authorization: `Bearer ${accessToken}`,
       "Paypal-Partner-Attribution-Id": env.BN_CODE,
     };
+
     const response = await axios.post(paypalApiUrl, {}, { headers });
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const order = response.data;
@@ -59,13 +60,40 @@ export async function POST(req: Request) {
       information: formData.information ?? "none",
       extra: formData.extra ?? "none",
       guesthouse: formData.guesthouse ?? "none",
-      date: sunsetData.date ?? "none",
-      adults: sunsetData.adult ?? 0,
-      infants: sunsetData.infants ?? 0,
-      price: sunsetData.price + "",
+      date: bookingData.date ?? "none",
+      adults: bookingData.adult ?? 0,
+      infants: bookingData.infants ?? 0,
+      price: bookingData.price + "",
     };
-
-    await api.booking.createSunsetBooking(object);
+    const totalNoOfPeople = bookingData.adult ?? 0 + bookingData.infants ?? 0;
+    const paypalId = await api.booking.createSunsetBooking(object);
+    if (totalNoOfPeople > 10) {
+      await api.booking.addBookingData({
+        paypalBoookingId: paypalId,
+        date: bookingData.date ?? "none",
+        boat: "ten_seater",
+        time: "none",
+        noOfPeople: 10,
+        bookingType: "sunset",
+      });
+      await api.booking.addBookingData({
+        paypalBoookingId: paypalId,
+        date: bookingData.date ?? "none",
+        boat: "seventeen_seater",
+        time: "none",
+        noOfPeople: totalNoOfPeople - 10,
+        bookingType: "sunset",
+      });
+    } else {
+      await api.booking.addBookingData({
+        paypalBoookingId: paypalId,
+        date: bookingData.date ?? "none",
+        boat: bookingData.boat ?? "none",
+        time: "none",
+        noOfPeople: totalNoOfPeople,
+        bookingType: "sunset",
+      });
+    }
     await api.email.buyerSunsetEmail({ ...object, paypalId: orderId });
     await api.email.sellerSunsetEmail({ ...object, paypalId: orderId });
 
@@ -73,11 +101,14 @@ export async function POST(req: Request) {
   } catch (error) {
     if (error instanceof TRPCClientError) {
       console.error(error.message);
-      throw new AxiosError(error.message);
+      return Response.json(error.message, { status: 500 });
     } else if (error instanceof AxiosError) {
       const err: string = error.response?.data.message;
       console.log(err);
-      throw new AxiosError(err);
+      return Response.json(err, { status: 500 });
+    } else {
+      console.error("Unexpected error:", error);
+      return Response.json("An unexpected error occurred", { status: 500 });
     }
   }
 }

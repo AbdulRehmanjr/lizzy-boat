@@ -93,6 +93,8 @@ export const PayPalButton = ({ state, setState, apiLinkEndpoint }: Props) => {
           description: "Something went wrong",
         });
       }
+    } finally {
+      setDisable(() => true);
     }
   };
 

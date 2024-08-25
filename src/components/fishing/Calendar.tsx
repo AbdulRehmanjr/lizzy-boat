@@ -52,9 +52,7 @@ export const Calendar = () => {
     let price = 0;
     switch (fishingData.daySlot) {
       case "full_day":
-        if (totalPeople === 1) {
-          price = 1100 / 2;
-        } else if (totalPeople === 2) {
+        if (totalPeople < 2) {
           price = 1100;
         } else {
           price = 1100 + (totalPeople - 2) * 40;
@@ -63,9 +61,7 @@ export const Calendar = () => {
         break;
 
       case "half_day":
-        if (totalPeople === 1) {
-          price = 550 / 2;
-        } else if (totalPeople === 2) {
+        if (totalPeople < 2) {
           price = 550;
         } else {
           price = 550 + (totalPeople - 2) * 40;
@@ -128,7 +124,6 @@ export const Calendar = () => {
     const boat = useMemo(() => {
       return bookingForCurrentDate ? bookingForCurrentDate.boatAvailable : "";
     }, [bookingForCurrentDate]);
-
     // useEffect(() => {
     //   const boat = bookingForCurrentDate
     //     ? bookingForCurrentDate.boatAvailable
@@ -167,6 +162,7 @@ export const Calendar = () => {
               ...prev,
               price: currentPrice,
               date: date.format("YYYY-MM-DD"),
+              boat: boat,
             }));
           }}
         >

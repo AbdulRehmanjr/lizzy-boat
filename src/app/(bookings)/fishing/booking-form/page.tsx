@@ -26,14 +26,17 @@ const FishingBookingForm = () => {
 
   useEffect(() => {
     if (currentBooking) {
-      setFishingData({ ...fishingData, boat: currentBooking.boatAvailable });
+      setFishingData((prev) => ({
+        ...prev,
+        boat: currentBooking.boatAvailable,
+      }));
     } else {
-      setFishingData({
-        ...fishingData,
+      setFishingData((prev) => ({
+        ...prev,
         boat: totalPeople <= 10 ? "ten_seater" : "seventeen_seater",
-      });
+      }));
     }
-  }, [currentBooking]);
+  }, [currentBooking]); 
   console.log(blockBookingsAccordingToBoats.data?.blockedDateSet);
 
   return (
