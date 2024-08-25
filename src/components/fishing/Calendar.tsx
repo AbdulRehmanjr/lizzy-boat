@@ -3,7 +3,7 @@
 import dayjs, { type Dayjs } from "dayjs";
 import { useAtom } from "jotai/react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FishingAtom } from "~/utils/stores";
 import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
@@ -18,6 +18,17 @@ export const Calendar = () => {
     booking_type: fishingData.daySlot ?? "",
     booking_time: fishingData.timeSlot ?? "",
   });
+
+  const blockBookingsAccordingToBoats = api.booking.getBlockedDates.useQuery({
+    numberOfPeople: fishingData.adult ?? 0 + fishingData.infants ?? 0,
+    bookingType: "fishing",
+    time: fishingData.timeSlot ?? "",
+  });
+  console.log(blockBookingsAccordingToBoats.data?.blockedDateSet);
+
+  const totalPeople = useMemo(() => {
+    return fishingData.adult ?? 0 + fishingData.infants ?? 0;
+  }, [fishingData]);
 
   const currentMonth: Dayjs[][] = useMemo(() => {
     const currentMonth = currentDate ?? dayjs();
@@ -38,14 +49,30 @@ export const Calendar = () => {
 
   const currentPrice = useMemo(() => {
     const totalPeople = fishingData.adult ?? 1;
+    let price = 0;
     switch (fishingData.daySlot) {
       case "full_day":
-        return totalPeople * 1100;
+        if (totalPeople < 2) {
+          price = 1100;
+        } else {
+          price = 1100 + (totalPeople - 2) * 40;
+        }
+        // return totalPeople  * 1100;
+        break;
+
       case "half_day":
-        return totalPeople * 550;
+        if (totalPeople < 2) {
+          price = 550;
+        } else {
+          price = 550 + (totalPeople - 2) * 40;
+        }
+        break;
+      // return totalPeople * 550;
       default:
+        price = 0;
         return 0;
     }
+    return price;
   }, [fishingData.adult, fishingData.daySlot]);
 
   const handlePreviousMonth = () => {
@@ -80,7 +107,37 @@ export const Calendar = () => {
     const isReserved = bookingBlock.data?.some(
       (blockDate) => date.format("YYYY-MM-DD") === blockDate,
     );
-    console.log(isReserved);
+    // console.log()
+
+    // Memoize bookingForCurrentDate to avoid unnecessary calculations
+    const bookingForCurrentDate = useMemo(() => {
+      return blockBookingsAccordingToBoats.data?.blockedDateSet?.find(
+        (blockDate) => blockDate.date === date.format("YYYY-MM-DD"),
+      );
+    }, [blockBookingsAccordingToBoats.data, date]);
+
+    // Memoize isTodayBooked to avoid unnecessary calculations
+    const isTodayBooked = useMemo(() => {
+      return bookingForCurrentDate ? bookingForCurrentDate.isBlocked : false;
+    }, [bookingForCurrentDate]);
+
+    const boat = useMemo(() => {
+      return bookingForCurrentDate ? bookingForCurrentDate.boatAvailable : "";
+    }, [bookingForCurrentDate]);
+    // useEffect(() => {
+    //   const boat = bookingForCurrentDate
+    //     ? bookingForCurrentDate.boatAvailable
+    //     : "";
+    //   if (fishingData.boat !== boat) {
+    //     setFishingData((prev) => ({
+    //       ...prev,
+    //       boat: boat,
+    //     }));
+    //   }
+    // }, [bookingForCurrentDate, fishingData.boat]);
+
+    // console.log("bookingForCurrentDate", bookingForCurrentDate);
+    // console.log(isReserved);
     const isTimeOver = isBookingTimeOver(date);
 
     return (
@@ -92,19 +149,30 @@ export const Calendar = () => {
             bookingDate?.isSame(date) &&
             "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"
           }`}
-          disabled={isPast || isReserved || isTimeOver}
+          disabled={
+            isPast ||
+            isReserved ||
+            isTimeOver ||
+            isTodayBooked ||
+            totalPeople > 27
+          }
           onClick={() => {
             setBookingDate(() => date);
             setFishingData((prev) => ({
               ...prev,
               price: currentPrice,
               date: date.format("YYYY-MM-DD"),
+              boat: boat,
             }));
           }}
         >
           <p className="flex flex-col gap-[1px] text-[10px] md:gap-1 md:text-base">
             <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
-            {!isPast && !isReserved && !isTimeOver ? (
+            {!isPast &&
+            !isReserved &&
+            !isTimeOver &&
+            !isTodayBooked &&
+            totalPeople <= 27 ? (
               <span>{currentPrice} €</span>
             ) : (
               <span>N/A</span>

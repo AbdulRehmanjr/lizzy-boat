@@ -25,6 +25,7 @@ const SelectPeopleSnorkeling = () => {
         (snorkeling.child_4_11 ?? 0);
     }
     setSnorkeling({ ...snorkeling, total_no_of_people: totalPeople });
+    return totalPeople;
   }, [
     snorkeling.adult,
     snorkeling.child_0_3,
@@ -33,6 +34,10 @@ const SelectPeopleSnorkeling = () => {
     snorkeling.child_9_13,
     snorkeling.daySlot,
   ]);
+
+  const isBlocked = useMemo(() => {
+    return totalPeople > 27;
+  }, [totalPeople]);
 
   return (
     <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
@@ -65,6 +70,7 @@ const SelectPeopleSnorkeling = () => {
               </Button>
               <p className="text-3xl text-[#1f788b]">{snorkeling.adult ?? 0}</p>
               <Button
+                disabled={isBlocked}
                 onClick={() => {
                   setSnorkeling({
                     ...snorkeling,
@@ -108,6 +114,7 @@ const SelectPeopleSnorkeling = () => {
                 {snorkeling.child_0_3 ?? 0}
               </p>
               <Button
+                disabled={isBlocked}
                 onClick={() => {
                   setSnorkeling({
                     ...snorkeling,
@@ -151,6 +158,7 @@ const SelectPeopleSnorkeling = () => {
                 {snorkeling.child_4_8 ?? 0}
               </p>
               <Button
+                disabled={isBlocked}
                 onClick={() => {
                   setSnorkeling({
                     ...snorkeling,
@@ -194,6 +202,7 @@ const SelectPeopleSnorkeling = () => {
                 {snorkeling.child_9_13 ?? 0}
               </p>
               <Button
+                disabled={isBlocked}
                 onClick={() => {
                   setSnorkeling({
                     ...snorkeling,
@@ -237,6 +246,7 @@ const SelectPeopleSnorkeling = () => {
               </Button>
               <p className="text-3xl text-[#1f788b]">{snorkeling.adult ?? 0}</p>
               <Button
+                disabled={isBlocked}
                 onClick={() => {
                   setSnorkeling({
                     ...snorkeling,
@@ -280,6 +290,7 @@ const SelectPeopleSnorkeling = () => {
                 {snorkeling.child_0_3 ?? 0}
               </p>
               <Button
+                disabled={isBlocked}
                 onClick={() => {
                   setSnorkeling({
                     ...snorkeling,
@@ -323,6 +334,7 @@ const SelectPeopleSnorkeling = () => {
                 {snorkeling.child_4_11 ?? 0}
               </p>
               <Button
+                disabled={isBlocked}
                 onClick={() => {
                   setSnorkeling({
                     ...snorkeling,
@@ -339,9 +351,9 @@ const SelectPeopleSnorkeling = () => {
         </>
       )}
 
-      {snorkeling.adult && snorkeling.adult !== 0 ? (
+      {snorkeling.adult && snorkeling.adult !== 0 && !isBlocked ? (
         <div className="flex justify-center md:col-span-2">
-          <Button asChild>
+          <Button asChild disabled={isBlocked}>
             <Link href={"/snorkeling/booking-date"}>Continue</Link>
           </Button>
         </div>

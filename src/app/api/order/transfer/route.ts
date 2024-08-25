@@ -10,11 +10,11 @@ export async function POST(req: Request) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const {
       orderId,
-      transferData,
+      bookingData,
       formData,
     }: {
       orderId: string;
-      transferData: TransferBookingProps;
+      bookingData: TransferBookingProps;
       formData: FormProps;
     } = await req.json();
 
@@ -59,18 +59,53 @@ export async function POST(req: Request) {
       information: formData.information ?? "none",
       extra: formData.extra ?? "none",
       guesthouse: formData.guesthouse ?? "none",
-      date: transferData.date ?? "none",
-      adults: transferData.adult ?? 0,
-      infants: transferData.infants ?? 0,
-      bookingType: transferData.transferType ?? "none",
-      startTime: transferData.startTime ?? "none",
-      endTime: transferData.endTime ?? "none",
-      blockTime: transferData.blockTime ?? "none-none",
-      price: transferData.price + "",
-      mode: transferData.mode ?? "none",
+      date: bookingData?.date ?? "none",
+      adults: bookingData?.adult ?? 0,
+      infants: bookingData?.infants ?? 0,
+      bookingType: bookingData?.transferType ?? "none",
+      startTime: bookingData?.startTime ?? "none",
+      endTime: bookingData?.endTime ?? "none",
+      blockTime: bookingData?.blockTime ?? "none-none",
+      price: bookingData?.price + "",
+      mode: bookingData?.mode ?? "none",
     };
-
-    await api.booking.createTransferBooking(object);
+    console.log("!!!???>>>", bookingData);
+    const totalNoOfPeople: number =
+      bookingData?.adult ?? 0 + bookingData?.infants ?? 0;
+    console.log(
+      "Number of people",
+      totalNoOfPeople,
+      bookingData?.adult,
+      bookingData?.infants,
+    );
+    const paypalId = await api.booking.createTransferBooking(object);
+    if (totalNoOfPeople > 10) {
+      await api.booking.addBookingData({
+        paypalBoookingId: paypalId,
+        date: bookingData?.date ?? "none",
+        boat: "ten_seater",
+        time: "none",
+        noOfPeople: 10,
+        bookingType: "transfer",
+      });
+      await api.booking.addBookingData({
+        paypalBoookingId: paypalId,
+        date: bookingData?.date ?? "none",
+        boat: "seventeen_seater",
+        time: "none",
+        noOfPeople: totalNoOfPeople - 10,
+        bookingType: "transfer",
+      });
+    } else {
+      await api.booking.addBookingData({
+        paypalBoookingId: paypalId,
+        date: bookingData?.date ?? "none",
+        boat: bookingData?.boat ?? "none",
+        time: "none",
+        noOfPeople: totalNoOfPeople,
+        bookingType: "transfer",
+      });
+    }
     await api.email.buyerTransferEmail({ ...object, paypalId: orderId });
     await api.email.sellerTransferEmail({ ...object, paypalId: orderId });
 
@@ -78,11 +113,14 @@ export async function POST(req: Request) {
   } catch (error) {
     if (error instanceof TRPCClientError) {
       console.error(error.message);
-      throw new AxiosError(error.message);
+      return Response.json(error.message, { status: 500 });
     } else if (error instanceof AxiosError) {
       const err: string = error.response?.data.message;
       console.log(err);
-      throw new AxiosError(err);
+      return Response.json(err, { status: 500 });
+    } else {
+      console.error("Unexpected error:", error);
+      return Response.json("An unexpected error occurred", { status: 500 });
     }
   }
 }

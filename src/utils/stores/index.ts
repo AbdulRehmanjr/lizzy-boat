@@ -19,6 +19,7 @@ const fishingInitial: FishingBookingProps = {
   price: 0,
   adult: undefined,
   infants: 0,
+  boat: "none",
 };
 
 const transferInitial: TransferBookingProps = {
@@ -31,6 +32,7 @@ const transferInitial: TransferBookingProps = {
   price: 0,
   adult: 0,
   infants: 0,
+  boat: "none",
 };
 
 const sunsetInitial: SunsetBookingProps = {
@@ -38,6 +40,7 @@ const sunsetInitial: SunsetBookingProps = {
   price: 0,
   adult: 0,
   infants: 0,
+  boat: "none",
 };
 
 const privateInitial: PrivateBookingProps = {
@@ -47,6 +50,7 @@ const privateInitial: PrivateBookingProps = {
   price: 0,
   adult: undefined,
   infants: 0,
+  boat: "none",
 };
 
 const snorkeingInitial: SnorkelingBookingProps = {

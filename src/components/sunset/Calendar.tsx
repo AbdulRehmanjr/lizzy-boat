@@ -16,6 +16,13 @@ export const Calendar = () => {
 
   const bookingBlock = api.booking.getSunsetBlockDates.useQuery();
 
+  const blockBookingsAccordingToBoats = api.booking.getBlockedDates.useQuery({
+    numberOfPeople: sunsetData.adult ?? 0 + sunsetData.infants ?? 0,
+    bookingType: "sunset",
+    time: "",
+  });
+  console.log(blockBookingsAccordingToBoats.data?.blockedDateSet);
+
   const currentMonth: Dayjs[][] = useMemo(() => {
     const currentMonth = currentDate || dayjs();
     const firstDay = currentMonth.clone().startOf("month").day();
@@ -48,11 +55,26 @@ export const Calendar = () => {
     if (!date) return <td className="border-[1px] border-[#1f788b]"></td>;
 
     const isPast = date.isBefore(dayjs(), "day");
-    const price = sunsetData.adult <= 4 ? 100 : 100 + sunsetData.adult * 30;
+    const total_people = sunsetData.adult ?? 0;
+    const price =
+      sunsetData.adult <= 4 ? 130 : 100 + (sunsetData.adult - 4) * 30;
 
     const isReserved = bookingBlock.data?.some(
       (blockDate) => date.format("YYYY-MM-DD") === blockDate,
     );
+
+    // block check for booking if already booked
+    const bookingForCurrentDate =
+      blockBookingsAccordingToBoats.data?.blockedDateSet?.find(
+        (blockDate) => blockDate.date === date.format("YYYY-MM-DD"),
+      );
+    const isTodayBooked = bookingForCurrentDate
+      ? bookingForCurrentDate?.isBlocked
+      : false;
+
+    const boat = useMemo(() => {
+      return bookingForCurrentDate ? bookingForCurrentDate.boatAvailable : "";
+    }, [bookingForCurrentDate]);
 
     // Check for hours left
     const now = dayjs();
@@ -65,19 +87,20 @@ export const Calendar = () => {
           variant={"outline"}
           type="button"
           className={`absolute left-0 top-0 h-full w-full p-0 ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
-          disabled={isPast || isLessThan24Hours || isReserved}
+          disabled={isPast || isLessThan24Hours || isReserved || isTodayBooked}
           onClick={() => {
             setBookingDate(() => date);
-            setSunsetData((prev) => ({
-              ...prev,
+            setSunsetData({
+              ...sunsetData,
               price: price,
               date: date.format("YYYY-MM-DD"),
-            }));
+              boat: boat,
+            });
           }}
         >
           <p className={`flex flex-col gap-[1px] text-[10px] md:text-base`}>
             <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
-            {!isPast && !isLessThan24Hours && !isReserved ? (
+            {!isPast && !isLessThan24Hours && !isReserved && !isTodayBooked ? (
               <span>{price} €</span>
             ) : (
               <span>N/A</span>

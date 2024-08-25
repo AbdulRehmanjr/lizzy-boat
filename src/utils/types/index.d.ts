@@ -17,6 +17,7 @@ type FishingBookingProps = {
   price: number;
   adult: number | undefined;
   infants: number;
+  boat: string;
 };
 
 type TransferBookingProps = {
@@ -29,6 +30,7 @@ type TransferBookingProps = {
   price: number;
   adult: number;
   infants: number;
+  boat: string;
 };
 
 type SunsetBookingProps = {
@@ -36,6 +38,7 @@ type SunsetBookingProps = {
   price: number;
   adult: number;
   infants: number;
+  boat: string;
 };
 
 type PrivateBookingProps = {
@@ -45,6 +48,8 @@ type PrivateBookingProps = {
   price: number;
   adult: number | undefined;
   infants: number;
+  boat: string;
+
 };
 
 type SnorkelingBookingProps = {
@@ -53,10 +58,10 @@ type SnorkelingBookingProps = {
   date: string | undefined;
   price: number;
   adult: number | undefined;
-  child_0_3: number | undefined;
-  child_4_8: number | undefined;
-  child_9_13: number | undefined;
-  child_4_11: number | undefined;
+  child_0_3: number;
+  child_4_8: number;
+  child_9_13: number;
+  child_4_11: number;
   total_no_of_people: number | undefined;
   boat: string | undefined;
 };
@@ -106,3 +111,29 @@ type SelectPeopleAge = {
 };
 
 type SelectPeopleAgeList = Record<string, SelectPeopleAge[]>;
+type BoatType = "ten_seater" | "seventeen_seater";
+
+type AdditionalBooking = {
+  id?: string;
+  paypalBoookingId?: string;
+  date: string;
+  boat: string;
+  noOfPeople: number;
+  bookingType: string;
+  time: string;
+};
+
+interface BookingSummary {
+  isBooked: boolean;
+  isCapacityAvailable: boolean;
+  bookingTypes: string[];
+  totalNoOfPeople: number;
+  morning: boolean;
+  afternoon: boolean;
+  full_day: boolean;
+  // bookingTypes: string[];
+  capacity: number;
+}
+
+// { id: string; paypalBoookingId: string; date: string; boat: string; noOfPeople: number; time: string; bookingType: string;
+// date: string; bookingType: string; time: string; boat: string; noOfPeople: number;

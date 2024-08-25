@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const {
       orderId,
-      bookingData, 
+      bookingData,
       formData,
     }: {
       orderId: string;
@@ -66,8 +66,35 @@ export async function POST(req: Request) {
       time: bookingData.timeSlot ?? "none",
       price: bookingData.price + "",
     };
-
-    await api.booking.createFishingBooking(object);
+    const totalNoOfPeople = bookingData.adult ?? 0 + bookingData.infants ?? 0;
+    const paypalId = await api.booking.createFishingBooking(object);
+    if (totalNoOfPeople > 10) {
+      await api.booking.addBookingData({
+        paypalBoookingId: paypalId,
+        date: bookingData.date ?? "none",
+        boat: "ten_seater",
+        time: bookingData.timeSlot ?? "none",
+        noOfPeople: 10,
+        bookingType: "fishing",
+      });
+      await api.booking.addBookingData({
+        paypalBoookingId: paypalId,
+        date: bookingData.date ?? "none",
+        boat: "seventeen_seater",
+        time: bookingData.timeSlot ?? "none",
+        noOfPeople: totalNoOfPeople - 10,
+        bookingType: "fishing",
+      });
+    } else {
+      await api.booking.addBookingData({
+        paypalBoookingId: paypalId,
+        date: bookingData.date ?? "none",
+        boat: bookingData.boat ?? "none",
+        time: bookingData.timeSlot ?? "none",
+        noOfPeople: totalNoOfPeople,
+        bookingType: "fishing",
+      });
+    }
     await api.email.buyerFishingEmail({ ...object, paypalId: orderId });
     await api.email.sellerFishingEmail({ ...object, paypalId: orderId });
 
@@ -75,11 +102,14 @@ export async function POST(req: Request) {
   } catch (error) {
     if (error instanceof TRPCClientError) {
       console.error(error.message);
-      throw new AxiosError(error.message);
+      return Response.json(error.message, { status: 500 });
     } else if (error instanceof AxiosError) {
       const err: string = error.response?.data.message;
       console.log(err);
-      throw new AxiosError(err);
+      return Response.json(err, { status: 500 });
+    } else {
+      console.error('Unexpected error:', error);
+      return Response.json('An unexpected error occurred', { status: 500 });
     }
   }
 }

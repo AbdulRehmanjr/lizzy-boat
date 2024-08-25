@@ -7,12 +7,20 @@ import { useMemo, useState } from "react";
 import { TransferAtom } from "~/utils/stores";
 import { Button } from "../general/Button";
 import clsx from "clsx";
+import { api } from "~/trpc/react";
 
 export const Calendar = () => {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
   const [bookingDate, setBookingDate] = useState<Dayjs>();
   const [transferData, setTransferData] = useAtom(TransferAtom);
+
+  const blockBookingsAccordingToBoats = api.booking.getBlockedDates.useQuery({
+    numberOfPeople: transferData.adult ?? 0 + transferData.infants ?? 0,
+    bookingType: "transfer",
+    time: "",
+  });
+  console.log(blockBookingsAccordingToBoats.data?.blockedDateSet);
 
   const currentMonth: Dayjs[][] = useMemo(() => {
     const currentMonth = currentDate || dayjs();
@@ -43,19 +51,20 @@ export const Calendar = () => {
   };
   const currentPrice = useMemo(() => {
     const transferMode = transferData.mode;
+    const total_people = transferData.adult ?? 0;
     switch (transferMode) {
       case "praslin_one_way":
-        return 125;
+        return total_people <= 4 ? 125 : (total_people - 4) * 40 + 125;
       case "praslin_back_n_forth":
-        return 200;
+        return total_people <= 4 ? 200 : (total_people - 4) * 40 + 200;
       case "felicity_one_way":
-        return 125;
+        return total_people <= 4 ? 125 : (total_people - 4) * 40 + 125;
       case "felicity_back_n_forth":
-        return 200;
+        return total_people <= 4 ? 200 : (total_people - 4) * 40 + 200;
       case "mahe_one_way":
-        return 400;
+        return total_people <= 4 ? 400 : (total_people - 4) * 40 + 400;
       case "mahe_back_n_forth":
-        return 700;
+        return total_people <= 4 ? 700 : (total_people - 4) * 40 + 700;
       default:
         return 0;
     }
@@ -71,6 +80,19 @@ export const Calendar = () => {
     const hoursLeft = date.diff(now, "hour");
     const isLessThan24Hours = hoursLeft < 24;
 
+    // block check for booking if already booked
+    const bookingForCurrentDate =
+      blockBookingsAccordingToBoats.data?.blockedDateSet?.find(
+        (blockDate) => blockDate.date === date.format("YYYY-MM-DD"),
+      );
+    const isTodayBooked = bookingForCurrentDate
+      ? bookingForCurrentDate?.isBlocked
+      : false;
+
+    const boat = useMemo(() => {
+      return bookingForCurrentDate ? bookingForCurrentDate.boatAvailable : "";
+    }, [bookingForCurrentDate]);
+
     return (
       <td
         className={clsx(
@@ -81,13 +103,14 @@ export const Calendar = () => {
           variant={"outline"}
           type="button"
           className={`absolute left-0 top-0 h-full w-full p-0 ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
-          disabled={isPast || isLessThan24Hours}
+          disabled={isPast || isLessThan24Hours || isTodayBooked}
           onClick={() => {
             setBookingDate(() => date);
             setTransferData((prev) => ({
               ...prev,
               price: currentPrice,
               date: date.format("YYYY-MM-DD"),
+              boat: boat,
             }));
           }}
         >
@@ -95,7 +118,7 @@ export const Calendar = () => {
             className={`flex flex-col gap-[1px] text-[10px] md:gap-1 md:text-base`}
           >
             <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
-            {!isPast && !isLessThan24Hours ? (
+            {!isPast && !isLessThan24Hours && !isTodayBooked ? (
               <span>{currentPrice} €</span>
             ) : (
               <span>N/A</span>
