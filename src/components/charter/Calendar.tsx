@@ -47,13 +47,9 @@ export const Calendar = () => {
     const totalPeople = privateData.adult ?? 1;
     switch (privateData.daySlot) {
       case "full_day":
-        return totalPeople <= 4
-          ? 800
-          : (totalPeople - 4) * 40 + 800;
+        return totalPeople <= 4 ? 800 : (totalPeople - 4) * 40 + 800;
       case "half_day":
-        return totalPeople <= 4
-          ? 400
-          : (totalPeople - 4) * 40 + 400;
+        return totalPeople <= 4 ? 400 : (totalPeople - 4) * 40 + 400;
       default:
         return 0;
     }
@@ -92,7 +88,7 @@ export const Calendar = () => {
   };
 
   const DateTemplate = ({ date }: { date: Dayjs }) => {
-    if (!date) return <td className="border-[1px] border-[#1f788b]"></td>;
+    if (!date) return <td className="border-[1px] border-gray-600"></td>;
 
     const isPast = date.isBefore(dayjs(), "day");
     const isBlock = isBlocked(date);
@@ -116,11 +112,11 @@ export const Calendar = () => {
     const isTimeOver = isBookingTimeOver(date);
 
     return (
-      <td className="relative h-[2.5rem] w-fit border-[1px] border-[#1f788b] md:h-[6rem] md:w-[2rem]">
+      <td className="relative h-[2.5rem] w-fit border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]">
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full p-0 ${
+          className={`absolute left-0 top-0 h-full w-full rounded-none border-0 p-0 ${
             bookingDate?.isSame(date) &&
             "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"
           }`}
@@ -137,8 +133,10 @@ export const Calendar = () => {
             }));
           }}
         >
-          <p className={`flex flex-col gap-[1px] text-[10px] md:text-base`}>
-            <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
+          <p
+            className={`flex flex-col gap-[1px] text-[10px] text-black/70 md:text-base`}
+          >
+            <span className={`font-bold`}>{date.date()}</span>
             {!isPast &&
             !isBlock &&
             !isReserved &&
@@ -202,14 +200,13 @@ export const Calendar = () => {
           ))}
         </tbody>
       </table>
-      {bookingDate && (
-        <Button
-          type="button"
-          onClick={() => router.push("/charter/booking-form")}
-        >
-          Continue
-        </Button>
-      )}
+      <Button
+        disabled={!bookingDate}
+        type="button"
+        onClick={() => router.push("/charter/booking-form")}
+      >
+        Continue
+      </Button>
     </div>
   );
 };

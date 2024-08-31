@@ -297,7 +297,7 @@ export const Calendar = () => {
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full p-0 ${
+          className={`absolute left-0 top-0 h-full w-full rounded-none border-0 p-0 ${
             bookingDate?.isSame(date) &&
             "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"
           }`}
@@ -313,9 +313,9 @@ export const Calendar = () => {
           }}
         >
           <p
-            className={`flex flex-col gap-[1px] text-[10px] md:gap-1 md:text-base`}
+            className={`flex flex-col gap-[1px] text-[10px] text-black/70 md:gap-1 md:text-base`}
           >
-            <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
+            <span className={`font-bold`}>{date.date()}</span>
             {!isDisabled ? <span>{currentPrice} €</span> : <span>N/A</span>}
           </p>
         </Button>
@@ -371,14 +371,13 @@ export const Calendar = () => {
           ))}
         </tbody>
       </table>
-      {bookingDate && (
-        <Button
-          type="button"
-          onClick={() => router.push("/snorkeling/booking-form")}
-        >
-          Continue
-        </Button>
-      )}
+      <Button
+        type="button"
+        onClick={() => router.push("/snorkeling/booking-form")}
+        disabled={!bookingDate}
+      >
+        Continue
+      </Button>
     </div>
   );
 };

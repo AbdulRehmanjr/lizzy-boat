@@ -18,9 +18,17 @@ type Props = {
   state: BookingProps;
   setState: React.Dispatch<React.SetStateAction<any>>;
   apiLinkEndpoint: string;
+  hideForm: boolean;
+  setHideForm: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const PayPalButton = ({ state, setState, apiLinkEndpoint }: Props) => {
+export const PayPalButton = ({
+  state,
+  setState,
+  apiLinkEndpoint,
+  hideForm,
+  setHideForm,
+}: Props) => {
   const { toast } = useToast();
   const router = useRouter();
   const formData = useAtomValue(FormAtom);
@@ -80,6 +88,7 @@ export const PayPalButton = ({ state, setState, apiLinkEndpoint }: Props) => {
         mode: undefined,
       }));
       setDisable(() => true);
+      setHideForm(() => false);
       router.push("/success");
     } catch (error) {
       if (error instanceof AxiosError) {

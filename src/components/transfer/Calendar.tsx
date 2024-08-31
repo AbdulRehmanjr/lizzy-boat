@@ -71,7 +71,7 @@ export const Calendar = () => {
   }, [transferData.mode]);
 
   const DateTemplate = ({ date }: { date: Dayjs }) => {
-    if (!date) return <td className="border-[1px] border-[#1f788b]"></td>;
+    if (!date) return <td className="border-[1px] border-gray-600"></td>;
 
     const isPast = date.isBefore(dayjs(), "day");
     // const price = 100;
@@ -96,13 +96,13 @@ export const Calendar = () => {
     return (
       <td
         className={clsx(
-          "relative h-[2.5rem] w-fit border-[1px] border-[#1f788b] md:h-[6rem] md:w-[2rem]",
+          "relative h-[2.5rem] w-fit border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]",
         )}
       >
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full p-0 ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
+          className={`absolute left-0 top-0 h-full w-full rounded-none border-0 p-0 ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
           disabled={isPast || isLessThan24Hours || isTodayBooked}
           onClick={() => {
             setBookingDate(() => date);
@@ -115,9 +115,9 @@ export const Calendar = () => {
           }}
         >
           <p
-            className={`flex flex-col gap-[1px] text-[10px] md:gap-1 md:text-base`}
+            className={`flex flex-col gap-[1px] text-[10px] text-black/70 md:gap-1 md:text-base`}
           >
-            <span className={`font-bold text-[#1f788b]`}>{date.date()}</span>
+            <span className={`font-bold`}>{date.date()}</span>
             {!isPast && !isLessThan24Hours && !isTodayBooked ? (
               <span>{currentPrice} €</span>
             ) : (
@@ -177,14 +177,13 @@ export const Calendar = () => {
           ))}
         </tbody>
       </table>
-      {bookingDate && (
-        <Button
-          type="button"
-          onClick={() => router.push("/transfer/booking-form")}
-        >
-          Continue
-        </Button>
-      )}
+      <Button
+        type="button"
+        onClick={() => router.push("/transfer/booking-form")}
+        disabled={!bookingDate}
+      >
+        Continue
+      </Button>
     </div>
   );
 };

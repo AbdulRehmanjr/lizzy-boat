@@ -1,10 +1,10 @@
 "use client";
 import { useAtom, useAtomValue } from "jotai";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import BookingForm from "~/components/general/BookingForm";
 import CheckoutOverview from "~/components/general/CheckoutOverview";
 import { api } from "~/trpc/react";
-import { TransferAtom } from "~/utils/stores";
+import { FormHide, TransferAtom } from "~/utils/stores";
 
 const TransferBookingForm = () => {
   const [transferData, setTransfer] = useAtom(TransferAtom);
@@ -32,14 +32,19 @@ const TransferBookingForm = () => {
       }));
     }
   }, [currentBooking]);
+
+  const [hideForm, sethideForm] = useAtom(FormHide);
+
   return (
     <div className="flex flex-col justify-center gap-10 p-6 md:flex-row md:gap-40">
-      <BookingForm />
+      <BookingForm hideForm={hideForm} setHideForm={sethideForm} />
       <CheckoutOverview
         state={transferData}
         setState={setTransfer}
         apiLinkEndpoint="transfer"
         data={data}
+        hideForm={hideForm}
+        setHideForm={sethideForm}
       />
     </div>
   );

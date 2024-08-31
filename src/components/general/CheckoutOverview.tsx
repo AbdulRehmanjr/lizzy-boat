@@ -8,6 +8,8 @@ type Props = {
   setState: React.Dispatch<React.SetStateAction<any>>;
   apiLinkEndpoint: string;
   data?: BookingProps;
+  hideForm: boolean;
+  setHideForm: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const CheckoutOverview = ({
@@ -15,11 +17,13 @@ const CheckoutOverview = ({
   setState,
   apiLinkEndpoint,
   data,
+  hideForm,
+  setHideForm,
 }: Props) => {
   return (
     <div className="text-yellow flex flex-col gap-4">
       <h1 className="font-ibm text-4xl">Booking overview</h1>
-      <div className="flex flex-col gap-2 text-[#1f788b]">
+      <div className="flex flex-col gap-2">
         <p className="flex gap-2">
           <span>Date:</span>
           <span>{dayjs(data?.date).format("DD-MM-YYYY")}</span>
@@ -89,11 +93,15 @@ const CheckoutOverview = ({
           <span>Price:</span>
           <span>{data?.price} €</span>
         </p>
-        <PayPalButton
-          state={state}
-          setState={setState}
-          apiLinkEndpoint={apiLinkEndpoint}
-        />
+        {hideForm && (
+          <PayPalButton
+            state={state}
+            setState={setState}
+            apiLinkEndpoint={apiLinkEndpoint}
+            hideForm={hideForm}
+            setHideForm={setHideForm}
+          />
+        )}
       </div>
     </div>
   );

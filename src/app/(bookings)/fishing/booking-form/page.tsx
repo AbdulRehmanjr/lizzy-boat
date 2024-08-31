@@ -1,10 +1,10 @@
 "use client";
 import { useAtom, useAtomValue } from "jotai";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import BookingForm from "~/components/general/BookingForm";
 import CheckoutOverview from "~/components/general/CheckoutOverview";
 import { api } from "~/trpc/react";
-import { FishingAtom } from "~/utils/stores";
+import { FishingAtom, FormHide } from "~/utils/stores";
 
 const FishingBookingForm = () => {
   const [fishingData, setFishingData] = useAtom(FishingAtom);
@@ -36,17 +36,19 @@ const FishingBookingForm = () => {
         boat: totalPeople <= 10 ? "ten_seater" : "seventeen_seater",
       }));
     }
-  }, [currentBooking]); 
+  }, [currentBooking]);
   console.log(blockBookingsAccordingToBoats.data?.blockedDateSet);
-
+  const [hideForm, sethideForm] = useAtom(FormHide);
   return (
     <div className="flex flex-col justify-center gap-10 p-6 md:flex-row md:gap-40">
-      <BookingForm />
+      <BookingForm hideForm={hideForm} setHideForm={sethideForm} />
       <CheckoutOverview
         data={data}
         state={fishingData}
         setState={setFishingData}
         apiLinkEndpoint="fishing"
+        hideForm={hideForm}
+        setHideForm={sethideForm}
       />
     </div>
   );

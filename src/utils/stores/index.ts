@@ -95,3 +95,5 @@ export const PayPalDisbaleAtom = atomWithStorage<boolean>(
   true,
 );
 export const PayPalIdAtom = atomWithStorage<string>("LizzyPayPalId", "");
+
+export const FormHide = atomWithStorage<boolean>("LizzyFormHide", false);

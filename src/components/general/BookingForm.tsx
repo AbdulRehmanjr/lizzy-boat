@@ -17,6 +17,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { api } from "~/trpc/react";
 import { PayPalIdAtom, PayPalDisbaleAtom, FormAtom } from "~/utils/stores";
 import { Button } from "./Button";
+import { useState } from "react";
 
 const formSchema = z.object({
   firstName: z.string({ required_error: "Field is required." }),
@@ -30,10 +31,18 @@ const formSchema = z.object({
   info: z.optional(z.string({ required_error: "Field is required." })),
 });
 
-const BookingForm = () => {
+const BookingForm = ({
+  hideForm,
+  setHideForm,
+}: {
+  hideForm: boolean;
+  setHideForm: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const setBookingId = useSetAtom(PayPalIdAtom);
   const setTrigger = useSetAtom(PayPalDisbaleAtom);
   const setFormData = useSetAtom(FormAtom);
+
+  // state for hiding the form
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,7 +52,8 @@ const BookingForm = () => {
     onSuccess: (data: string) => {
       setBookingId(() => data);
       setTrigger(() => false);
-      window.location.reload();
+      setHideForm(() => true);
+      // window.location.reload();
     },
   });
 
@@ -62,138 +72,140 @@ const BookingForm = () => {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(formSubmitted)}
-        className={`text-mid-blue grid grid-cols-2 gap-3`}
-      >
-        <h1 className="font-ibm col-span-2 text-4xl">
-          Personal information
-        </h1>
-        <FormField
-          control={form.control}
-          name="firstName"
-          render={({ field }) => (
-            <FormItem className="col-span-2 md:col-span-1">
-              <FormLabel>First name</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Enter first name"
-                  {...field}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="lastName"
-          render={({ field }) => (
-            <FormItem className="col-span-2 md:col-span-1">
-              <FormLabel>Last name</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Enter last name"
-                  {...field}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem className="col-span-2 md:col-span-1">
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Enter email"
-                  {...field}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem className="col-span-2 md:col-span-1">
-              <FormLabel>Phone no.</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Enter phone no."
-                  {...field}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="guesthouse"
-          render={({ field }) => (
-            <FormItem className="col-span-2">
-              <FormLabel>Guesthouse name</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Enter guesthouse name"
-                  {...field}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="info"
-          render={({ field }) => (
-            <FormItem className="col-span-2">
-              <FormLabel>How did you get to know us?</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="how did you get to know us?"
-                  {...field}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="additional"
-          render={({ field }) => (
-            <FormItem className="col-span-2">
-              <FormLabel>Additional information</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Write additional information"
-                  {...field}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="col-span-2 flex justify-center">
-          <Button type="submit" disabled={createBooking.isPending}>
-            {createBooking.isPending ? "Continue..." : "Continue"}
-          </Button>
-        </div>
-      </form>
+      {!hideForm && (
+        <form
+          onSubmit={form.handleSubmit(formSubmitted)}
+          className={`grid grid-cols-2 gap-3 text-black/70`}
+        >
+          <h1 className="font-ibm col-span-2 text-4xl text-[#1f788b]">
+            Personal information
+          </h1>
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem className="col-span-2 md:col-span-1">
+                <FormLabel>First name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter first name"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem className="col-span-2 md:col-span-1">
+                <FormLabel>Last name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter last name"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="col-span-2 md:col-span-1">
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter email"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem className="col-span-2 md:col-span-1">
+                <FormLabel>Phone no.</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter phone no."
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="guesthouse"
+            render={({ field }) => (
+              <FormItem className="col-span-2">
+                <FormLabel>Guesthouse name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter guesthouse name"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="info"
+            render={({ field }) => (
+              <FormItem className="col-span-2">
+                <FormLabel>How did you get to know us?</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="how did you get to know us?"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="additional"
+            render={({ field }) => (
+              <FormItem className="col-span-2">
+                <FormLabel>Additional information</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Write additional information"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="col-span-2 flex justify-center">
+            <Button type="submit" disabled={createBooking.isPending}>
+              {createBooking.isPending ? "Continue..." : "Continue"}
+            </Button>
+          </div>
+        </form>
+      )}
     </Form>
   );
 };
