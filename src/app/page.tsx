@@ -1,11 +1,21 @@
+"use client";
 import clsx from "clsx";
+import { useEffect } from "react";
 import TourCard from "~/components/cards/TourCard";
 import { tourCards } from "~/constants";
+import { clearLocalStorage } from "~/lib/utils";
 
 export default async function Home() {
+  useEffect(() => {
+    clearLocalStorage();
+  }, []);
   return (
     <section className="flex flex-col items-center justify-center gap-4">
-      <h1 className={`text-2xl font-normal md:text-4xl text-[#1f788b] text-center`}>Explore your journey</h1>
+      <h1
+        className={`text-center text-2xl font-normal text-[#1f788b] md:text-4xl`}
+      >
+        Explore your journey
+      </h1>
       <menu className="grid grid-cols-2 grid-rows-3 gap-4 p-10">
         {tourCards.map((card, index) => (
           <TourCard

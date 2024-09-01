@@ -15,7 +15,7 @@ const MorningEvening = ({ state, setState, linkToRedirect }: Props) => {
     <menu className="grid grid-rows-2 gap-4 text-center md:grid-flow-row md:grid-cols-2 md:grid-rows-1">
       <li
         className={clsx(
-          "half-day grid h-[300px] w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg p-5 text-lg backdrop-blur md:w-[400px] md:text-2xl border-2 border-[#1f788b] hover:text-[#F7FCFC] hover:bg-[#1f788b] text-[#1f788b]",
+          "half-day grid h-[300px] w-[270px] sm:w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg p-5 text-lg backdrop-blur md:w-[400px] md:text-2xl border-2 border-[#1f788b] hover:text-[#F7FCFC] hover:bg-[#1f788b] text-[#1f788b]",
           {
             "text-[#F7FCFC] bg-[#1f788b]":
               state.timeSlot && state.timeSlot === "morning",
@@ -31,7 +31,7 @@ const MorningEvening = ({ state, setState, linkToRedirect }: Props) => {
       </li>
       <li
         className={clsx(
-          "full-day flex h-[300px] w-[350px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg  p-5 text-lg  md:w-[400px] md:text-2xl border-2 border-[#1f788b] hover:text-[#F7FCFC] hover:bg-[#1f788b] text-[#1f788b]",
+          "full-day flex h-[300px] w-[270px] sm:w-[350px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg  p-5 text-lg  md:w-[400px] md:text-2xl border-2 border-[#1f788b] hover:text-[#F7FCFC] hover:bg-[#1f788b] text-[#1f788b]",
           {
             "text-[#F7FCFC] bg-[#1f788b]":
               state.timeSlot && state.timeSlot === "afternoon",

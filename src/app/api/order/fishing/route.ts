@@ -73,7 +73,10 @@ export async function POST(req: Request) {
         paypalBoookingId: paypalId,
         date: bookingData.date ?? "none",
         boat: "ten_seater",
-        time: bookingData.timeSlot ?? "none",
+        time:
+          bookingData.daySlot === "full_day"
+            ? bookingData.daySlot
+            : (bookingData.timeSlot ?? "none"),
         noOfPeople: 10,
         bookingType: "fishing",
       });
@@ -81,7 +84,10 @@ export async function POST(req: Request) {
         paypalBoookingId: paypalId,
         date: bookingData.date ?? "none",
         boat: "seventeen_seater",
-        time: bookingData.timeSlot ?? "none",
+        time:
+          bookingData.daySlot === "full_day"
+            ? bookingData.daySlot
+            : (bookingData.timeSlot ?? "none"),
         noOfPeople: totalNoOfPeople - 10,
         bookingType: "fishing",
       });
@@ -90,7 +96,10 @@ export async function POST(req: Request) {
         paypalBoookingId: paypalId,
         date: bookingData.date ?? "none",
         boat: bookingData.boat ?? "none",
-        time: bookingData.timeSlot ?? "none",
+        time:
+          bookingData.daySlot === "full_day"
+            ? bookingData.daySlot
+            : (bookingData.timeSlot ?? "none"),
         noOfPeople: totalNoOfPeople,
         bookingType: "fishing",
       });
@@ -108,8 +117,8 @@ export async function POST(req: Request) {
       console.log(err);
       return Response.json(err, { status: 500 });
     } else {
-      console.error('Unexpected error:', error);
-      return Response.json('An unexpected error occurred', { status: 500 });
+      console.error("Unexpected error:", error);
+      return Response.json("An unexpected error occurred", { status: 500 });
     }
   }
 }

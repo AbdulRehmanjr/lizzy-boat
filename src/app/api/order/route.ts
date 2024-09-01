@@ -73,7 +73,7 @@ export async function POST(req: Request) {
           },
           items: [
             {
-              name: "Nedy Bike Booking",
+              name: "Lizzy C Boat Booking",
               unit_amount: {
                 currency_code: "EUR",
                 value: +totalPrice.toFixed(2),

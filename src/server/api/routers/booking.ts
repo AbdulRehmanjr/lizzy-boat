@@ -370,7 +370,7 @@ export const BookingRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        console.log(input)
+        console.log(input);
         const uuid = randomUUID().toString();
         const payPal = await ctx.db.lizzyPayPalBoookingInfo.create({
           data: {
@@ -718,6 +718,12 @@ export const BookingRouter = createTRPCRouter({
               }
             }
             switch (input.bookingType) {
+              case "transfer":
+                isTenSeaterBlocked =
+                  isMorningBlocked ||
+                  isAfternoonBlocked ||
+                  fullDayBookings.length > 0 ||
+                  isTenSeaterBlocked;
               case "charter":
                 isTenSeaterBlocked =
                   isMorningBlocked ||
@@ -1003,6 +1009,12 @@ export const BookingRouter = createTRPCRouter({
               }
             }
             switch (input.bookingType) {
+              case "transfer":
+                isSeventeenSeaterBlocked =
+                  isMorningBlocked ||
+                  isAfternoonBlocked ||
+                  fullDayBookings.length > 0 ||
+                  isSeventeenSeaterBlocked;
               case "charter":
                 isSeventeenSeaterBlocked =
                   isMorningBlocked ||

@@ -78,7 +78,10 @@ export async function POST(req: Request) {
         paypalBoookingId: paypalId,
         date: bookingData.date ?? "none",
         boat: "ten_seater",
-        time: bookingData.timeSlot ?? "none",
+        time:
+          bookingData.daySlot === "full_day"
+            ? bookingData.daySlot
+            : (bookingData.timeSlot ?? "none"),
         noOfPeople: 10,
         bookingType: "snorkeling",
       });
@@ -86,7 +89,10 @@ export async function POST(req: Request) {
         paypalBoookingId: paypalId,
         date: bookingData.date ?? "none",
         boat: "seventeen_seater",
-        time: bookingData.timeSlot ?? "none",
+        time:
+          bookingData.daySlot === "full_day"
+            ? bookingData.daySlot
+            : (bookingData.timeSlot ?? "none"),
         noOfPeople: bookingData.total_no_of_people - 10,
         bookingType: "snorkeling",
       });
@@ -95,7 +101,10 @@ export async function POST(req: Request) {
         paypalBoookingId: paypalId,
         date: bookingData.date ?? "none",
         boat: bookingData.boat ?? "none",
-        time: bookingData.timeSlot ?? "none",
+        time:
+          bookingData.daySlot === "full_day"
+            ? bookingData.daySlot
+            : (bookingData.timeSlot ?? "none"),
         noOfPeople: bookingData.total_no_of_people ?? 0,
         bookingType: "snorkeling",
       });
