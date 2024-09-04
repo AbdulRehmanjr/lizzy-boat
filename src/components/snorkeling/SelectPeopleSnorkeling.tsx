@@ -391,7 +391,7 @@ const SelectPeopleSnorkeling = () => {
         </>
       )}
 
-      {snorkeling.adult && snorkeling.adult !== 0 && !isBlocked ? (
+      {snorkeling.adult && snorkeling.adult !== 0  ? (
         <div className="flex justify-center md:col-span-2">
           <Button asChild disabled={isBlocked}>
             <Link href={"/snorkeling/booking-date"}>Continue</Link>
