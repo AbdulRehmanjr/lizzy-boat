@@ -184,7 +184,7 @@ export const Calendar = () => {
   };
 
   return (
-    <div className="grid gap-4 md:p-6">
+    <div className="grid gap-4 md:px-6 md:pt-6">
       <div className="my-6 flex w-full items-center justify-between gap-4">
         <Button
           type="button"
@@ -231,13 +231,16 @@ export const Calendar = () => {
           ))}
         </tbody>
       </table>
+      <div className="flex justify-center">
         <Button
           disabled={!bookingDate}
           type="button"
           onClick={() => router.push("/fishing/booking-form")}
+          
         >
           Continue
         </Button>
+      </div>
     </div>
   );
 };

@@ -1,12 +1,10 @@
 import React from "react";
-import { Calendar } from "~/components/fishing/Calendar";
-
+import { CalendarReturn } from "~/components/transfer/CalendarReturn";
 
 const BookingDate = () => {
   return (
     <>
-      {/* <p>Calendar</p> */}
-      <Calendar />
+      <CalendarReturn />
     </>
   );
 };

@@ -4,32 +4,29 @@ import dayjs, { type Dayjs } from "dayjs";
 import { useAtom } from "jotai/react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { PrivateAtom } from "~/utils/stores";
-import { api } from "~/trpc/react";
+import { TransferAtom } from "~/utils/stores";
 import { Button } from "../general/Button";
+import clsx from "clsx";
+import { api } from "~/trpc/react";
 
-export const Calendar = () => {
+export const CalendarReturn = () => {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
   const [bookingDate, setBookingDate] = useState<Dayjs>();
-  const [privateData, setPrivateCharterData] = useAtom(PrivateAtom);
-
-  const bookingBlock = api.booking.getPrivateBlockDates.useQuery({
-    booking_type: privateData.daySlot ?? "none",
-    booking_time: privateData.timeSlot ?? "none",
-  });
+  const [transferData, setTransferData] = useAtom(TransferAtom);
 
   const blockBookingsAccordingToBoats = api.booking.getBlockedDates.useQuery({
-    numberOfPeople: privateData.adult ?? 0 + privateData.infants ?? 0,
-    bookingType: "charter",
-    time: privateData.timeSlot ?? "",
+    numberOfPeople: transferData.adult ?? 0 + transferData.infants ?? 0,
+    bookingType: "transfer",
+    time: "",
   });
   console.log(blockBookingsAccordingToBoats.data?.blockedDateSet);
 
   const currentMonth: Dayjs[][] = useMemo(() => {
-    const currentMonth = currentDate ?? dayjs();
+    const currentMonth = currentDate || dayjs();
     const firstDay = currentMonth.clone().startOf("month").day();
     const daysInMonth = currentMonth.daysInMonth();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const emptyDaysBefore: Dayjs[] = Array(firstDay).fill(null);
     const currentMonthDays: Dayjs[] = Array.from(
       { length: daysInMonth },
@@ -43,58 +40,45 @@ export const Calendar = () => {
     return weekgrid;
   }, [currentDate]);
 
-  const currentPrice = useMemo(() => {
-    const totalPeople = privateData.adult ?? 1;
-    switch (privateData.daySlot) {
-      case "full_day":
-        return totalPeople <= 4 ? 800 : (totalPeople - 4) * 40 + 800;
-      case "half_day":
-        return totalPeople <= 4 ? 400 : (totalPeople - 4) * 40 + 400;
-      default:
-        return 0;
-    }
-  }, [privateData.adult, privateData.daySlot]);
-
   const handlePreviousMonth = () => {
-    const newDate = currentDate ?? dayjs();
+    const newDate = currentDate || dayjs();
     setCurrentDate(newDate.clone().subtract(1, "month"));
   };
 
   const handleNextMonth = () => {
-    const newDate = currentDate ?? dayjs();
+    const newDate = currentDate || dayjs();
     setCurrentDate(newDate.clone().add(1, "month"));
   };
-
-  const isBookingTimeOver = (date: Dayjs): boolean => {
-    const now = dayjs();
-    console.log(now);
-    const hoursLeft = date.diff(now, "hour");
-    if (privateData.daySlot === "full_day") {
-      return hoursLeft < 24;
-    } else if (privateData.daySlot === "half_day") {
-      if (privateData.timeSlot === "morning") {
-        return hoursLeft < 1;
-      } else {
-        return false;
-      }
+  const currentPrice = useMemo(() => {
+    const transferMode = transferData.mode;
+    const total_people = transferData.adult ?? 0;
+    switch (transferMode) {
+      case "praslin_one_way":
+        return total_people <= 4 ? 125 : (total_people - 4) * 40 + 125;
+      case "praslin_back_n_forth":
+        return total_people <= 4 ? 200 : (total_people - 4) * 40 + 200;
+      case "felicity_one_way":
+        return total_people <= 4 ? 125 : (total_people - 4) * 40 + 125;
+      case "felicity_back_n_forth":
+        return total_people <= 4 ? 200 : (total_people - 4) * 40 + 200;
+      case "mahe_one_way":
+        return total_people <= 4 ? 400 : (total_people - 4) * 40 + 400;
+      case "mahe_back_n_forth":
+        return total_people <= 4 ? 700 : (total_people - 4) * 40 + 700;
+      default:
+        return 0;
     }
-    return true;
-  };
-  const isBlocked = (date: Dayjs): boolean => {
-    const dayOfWeek = date.day();
-    if (privateData.daySlot == "full_day")
-      return dayOfWeek === 0 || dayOfWeek === 6;
-    return false;
-  };
+  }, [transferData.mode]);
 
   const DateTemplate = ({ date }: { date: Dayjs }) => {
     if (!date) return <td className="border-[1px] border-gray-600"></td>;
 
     const isPast = date.isBefore(dayjs(), "day");
-    const isBlock = isBlocked(date);
-    const isReserved = bookingBlock.data?.some(
-      (blockDate) => date.format("YYYY-MM-DD") === blockDate.date,
-    );
+    // const price = 100;
+    //Check for 12 hours
+    const now = dayjs();
+    const hoursLeft = date.diff(now, "hour");
+    const isLessThan24Hours = hoursLeft < 24;
 
     // block check for booking if already booked
     const bookingForCurrentDate =
@@ -109,40 +93,33 @@ export const Calendar = () => {
       return bookingForCurrentDate ? bookingForCurrentDate.boatAvailable : "";
     }, [bookingForCurrentDate]);
 
-    const isTimeOver = isBookingTimeOver(date);
-
     return (
-      <td className="relative h-[2.5rem] w-fit border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]">
+      <td
+        className={clsx(
+          "relative h-[2.5rem] w-fit border-[1px] border-gray-600 md:h-[6rem] md:w-[2rem]",
+        )}
+      >
         <Button
           variant={"outline"}
           type="button"
-          className={`absolute left-0 top-0 h-full w-full rounded-none border-0 p-0 ${
-            bookingDate?.isSame(date) &&
-            "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"
-          }`}
-          disabled={
-            isPast || isBlock || isReserved || isTimeOver || isTodayBooked
-          }
+          className={`absolute left-0 top-0 h-full w-full rounded-none border-0 p-0 ${bookingDate?.isSame(date) && "bg-[#1f788b]/80 text-[#f7fcfc] hover:bg-[#1f788b]/90 hover:text-[#f7fcfc] [&_span]:text-[#f7fcfc]"}`}
+          disabled={isPast || isLessThan24Hours || isTodayBooked}
           onClick={() => {
             setBookingDate(() => date);
-            setPrivateCharterData((prev) => ({
+            setTransferData((prev) => ({
               ...prev,
-              price: currentPrice,
-              date: date.format("YYYY-MM-DD"),
+              // price: currentPrice,
+              date_return: date.format("YYYY-MM-DD"),
               boat: boat,
             }));
           }}
         >
           <p
-            className={`flex flex-col gap-[1px] text-[10px] text-black/70 md:text-base`}
+            className={`flex flex-col gap-[1px] text-[10px] text-black/70 md:gap-1 md:text-base`}
           >
             <span className={`font-bold`}>{date.date()}</span>
-            {!isPast &&
-            !isBlock &&
-            !isReserved &&
-            !isTimeOver &&
-            !isTodayBooked ? (
-              <span>{currentPrice} €</span>
+            {!isPast && !isLessThan24Hours && !isTodayBooked ? (
+              <span>{currentPrice} € </span>
             ) : (
               <span>N/A</span>
             )}
@@ -153,7 +130,7 @@ export const Calendar = () => {
   };
 
   return (
-    <div className="grid gap-4 p-6">
+    <div className="grid gap-4 px-6 pt-6">
       <div className="my-6 flex w-full items-center justify-between gap-4">
         <Button
           type="button"
@@ -162,7 +139,7 @@ export const Calendar = () => {
         >
           Prev
         </Button>
-        <p className="grid place-content-center text-base md:text-xl">
+        <p className="text-base md:text-xl">
           {currentDate
             ? currentDate.format("MMMM YYYY")
             : dayjs().format("MMMM YYYY")}
@@ -202,9 +179,9 @@ export const Calendar = () => {
       </table>
       <div className="flex justify-center">
         <Button
-          disabled={!bookingDate}
           type="button"
-          onClick={() => router.push("/charter/booking-form")}
+          onClick={() => router.push("/transfer/booking-time-return")}
+          disabled={!bookingDate}
         >
           Continue
         </Button>

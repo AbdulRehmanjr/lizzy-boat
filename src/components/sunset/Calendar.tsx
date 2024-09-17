@@ -161,13 +161,15 @@ export const Calendar = () => {
           ))}
         </tbody>
       </table>
-      <Button
-        disabled={!bookingDate}
-        type="button"
-        onClick={() => router.push("/sunset/booking-form")}
-      >
-        Continue
-      </Button>
+      <div className="flex justify-center">
+        <Button
+          disabled={!bookingDate}
+          type="button"
+          onClick={() => router.push("/sunset/booking-form")}
+        >
+          Continue
+        </Button>
+      </div>
     </div>
   );
 };

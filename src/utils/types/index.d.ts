@@ -21,11 +21,14 @@ type FishingBookingProps = {
 };
 
 type TransferBookingProps = {
+  depart_from: string | undefined;
+  depart_from_return: string | undefined;
   transferType: string | undefined;
   startTime: string | undefined;
   endTime: string | undefined;
   blockTime: string | undefined;
   date: string | undefined;
+  date_return: string | undefined;
   mode: string | undefined;
   price: number;
   adult: number;
@@ -49,7 +52,6 @@ type PrivateBookingProps = {
   adult: number | undefined;
   infants: number;
   boat: string;
-
 };
 
 type SnorkelingBookingProps = {

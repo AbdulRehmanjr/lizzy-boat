@@ -10,7 +10,7 @@ const Fishing = () => {
 
   return (
     <>
-      <h1 className={`text-2xl font-bold md:text-4xl text-center`}>Choose between</h1>
+      <h1 className={`text-2xl md:text-4xl text-center`}>Choose between</h1>
       <SelectPeople
         state={sunsetData}
         setState={setSunsetData}

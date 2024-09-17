@@ -7,17 +7,25 @@ type Props = {
   state: BookingProps;
   setState: React.Dispatch<React.SetStateAction<any>>;
   linkToRedirect: string;
+  morningTime?: string;
+  eveningTime?: string;
 };
 
-const MorningEvening = ({ state, setState, linkToRedirect }: Props) => {
+const MorningEvening = ({
+  state,
+  setState,
+  linkToRedirect,
+  morningTime,
+  eveningTime,
+}: Props) => {
   const router = useRouter();
   return (
     <menu className="grid grid-rows-2 gap-4 text-center md:grid-flow-row md:grid-cols-2 md:grid-rows-1">
       <li
         className={clsx(
-          "half-day grid h-[300px] w-[270px] sm:w-[350px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg p-5 text-lg backdrop-blur md:w-[400px] md:text-2xl border-2 border-[#1f788b] hover:text-[#F7FCFC] hover:bg-[#1f788b] text-[#1f788b]",
+          "half-day grid h-[300px] w-[270px] cursor-pointer flex-col place-content-center items-center justify-center gap-3 rounded-lg border-2 border-[#1f788b] p-5 text-lg text-[#1f788b] backdrop-blur hover:bg-[#1f788b] hover:text-[#F7FCFC] sm:w-[350px] md:w-[400px] md:text-2xl",
           {
-            "text-[#F7FCFC] bg-[#1f788b]":
+            "bg-[#1f788b] text-[#F7FCFC]":
               state.timeSlot && state.timeSlot === "morning",
           },
         )}
@@ -27,13 +35,13 @@ const MorningEvening = ({ state, setState, linkToRedirect }: Props) => {
         }}
       >
         <h4 className="text-4xl md:text-5xl">Morning</h4>
-        <p>09:30 am - 12:30 pm</p>
+        <p>{morningTime || "09:30 am - 12:30 pm"}</p>
       </li>
       <li
         className={clsx(
-          "full-day flex h-[300px] w-[270px] sm:w-[350px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg  p-5 text-lg  md:w-[400px] md:text-2xl border-2 border-[#1f788b] hover:text-[#F7FCFC] hover:bg-[#1f788b] text-[#1f788b]",
+          "full-day flex h-[300px] w-[270px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-[#1f788b] p-5 text-lg text-[#1f788b] hover:bg-[#1f788b] hover:text-[#F7FCFC] sm:w-[350px] md:w-[400px] md:text-2xl",
           {
-            "text-[#F7FCFC] bg-[#1f788b]":
+            "bg-[#1f788b] text-[#F7FCFC]":
               state.timeSlot && state.timeSlot === "afternoon",
           },
         )}
@@ -46,7 +54,7 @@ const MorningEvening = ({ state, setState, linkToRedirect }: Props) => {
         }}
       >
         <h4 className="text-4xl md:text-5xl">Afternoon</h4>
-        <p>13:30 pm - 16:30 pm</p>
+        <p>{eveningTime || "13:30 pm - 16:30 pm"}</p>
       </li>
     </menu>
   );
