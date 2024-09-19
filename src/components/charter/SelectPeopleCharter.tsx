@@ -24,7 +24,7 @@ const SelectPeopleCharter = () => {
         (privateAtom.child_0_3 ?? 0) +
         (privateAtom.child_4_11 ?? 0);
     }
-    setPrivateData({ ...privateAtom, total_no_of_people: totalPeople });
+    setPrivateData((prev) => ({ ...prev, total_no_of_people: totalPeople }));
     return totalPeople;
   }, [
     privateAtom.adult,
@@ -34,6 +34,9 @@ const SelectPeopleCharter = () => {
     privateAtom.child_9_13,
     privateAtom.daySlot,
   ]);
+  useEffect(() => {
+    console.log("Private Atom total people", privateAtom.total_no_of_people);
+  }, [privateAtom]);
 
   const isBlocked = useMemo(() => {
     return totalPeople >= 27;
@@ -394,7 +397,7 @@ const SelectPeopleCharter = () => {
       {privateAtom.adult && privateAtom.adult !== 0 ? (
         <div className="flex justify-center md:col-span-2">
           <Button asChild disabled={isBlocked}>
-            <Link href={"/charter/booking-date"}>Continue</Link> 
+            <Link href={"/charter/booking-date"}>Continue</Link>
           </Button>
         </div>
       ) : (
