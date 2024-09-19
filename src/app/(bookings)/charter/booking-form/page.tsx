@@ -11,7 +11,7 @@ const CharterBookingForm = () => {
   const data = useAtomValue(PrivateAtom);
 
   const blockBookingsAccordingToBoats = api.booking.getBlockedDates.useQuery({
-    numberOfPeople: privateData.adult ?? 0 + privateData.infants ?? 0,
+    numberOfPeople: privateData.total_no_of_people ?? 0 ,
     bookingType: "charter",
     time: privateData.timeSlot ?? "",
   });
@@ -21,7 +21,7 @@ const CharterBookingForm = () => {
     );
 
   const totalPeople = useMemo(() => {
-    return privateData.adult ?? 0 + privateData.infants ?? 0;
+    return privateData.total_no_of_people ?? 0 ;
   }, [privateData]);
 
   useEffect(() => {
