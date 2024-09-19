@@ -52,8 +52,12 @@ const privateInitial: PrivateBookingProps = {
   date: undefined,
   price: 0,
   adult: undefined,
-  infants: 0,
   boat: "none",
+  child_0_3: 0,
+  child_4_8: 0,
+  child_9_13: 0,
+  child_4_11: 0,
+  total_no_of_people: 0,
 };
 
 const snorkeingInitial: SnorkelingBookingProps = {

@@ -154,7 +154,11 @@ export const EmailRouter = createTRPCRouter({
         extra: z.string(),
         information: z.string(),
         adults: z.number(),
-        infants: z.number(),
+        child_0_3: z.number(),
+        child_4_8: z.number(),
+        child_9_13: z.number(),
+        child_4_11: z.number(),
+        total_no_of_people: z.number(),
         bookingType: z.string(),
         time: z.string(),
         date: z.string(),
@@ -227,10 +231,29 @@ export const EmailRouter = createTRPCRouter({
                                     <span style="font-weight:bold;">Adults: </span>
                                     <span>${input?.adults}</span>
                                 </p>
-                                <p>
-                                    <span style="font-weight:bold;">Infants: </span>
-                                    <span>${input?.infants}</span>
-                                </p>
+                                 <p>
+                                <span style="font-weight:bold;">Child (0-3): </span>
+                                <span>${input?.child_0_3}</span>
+                            </p>
+                            ${
+                              input?.bookingType === "half_day"
+                                ? `
+                            <p>
+                                <span style="font-weight:bold;">Child (4-8): </span>
+                                <span>${input?.child_4_8}</span>
+                            </p>
+                            <p>
+                                <span style="font-weight:bold;">Child (9-13): </span>
+                                <span>${input?.child_9_13}</span>
+                            </p>
+                            `
+                                : `
+                            <p>
+                                <span style="font-weight:bold;">Child (4-11): </span>
+                                <span>${input?.child_4_11}</span>
+                            </p>                                
+                                `
+                            }
                                 <p>
                                     <span style="font-weight:bold;">Booking Type: </span>
                                     <span>${input?.bookingType}</span>
@@ -456,6 +479,9 @@ export const EmailRouter = createTRPCRouter({
         blockTime: z.string(),
         price: z.string(),
         date: z.string(),
+        dateReturn: z.string(),
+        departFrom: z.string(),
+        departFromReturn: z.string(),
         paypalId: z.string(),
       }),
     )
@@ -548,6 +574,21 @@ export const EmailRouter = createTRPCRouter({
                                 <span style="font-weight:bold;">Date: </span>
                                 <span>${input?.date}</span>
                             </p>
+                            ${input?.dateReturn && `<p>
+                                <span style="font-weight:bold;">Date return: </span>
+                                <span>${input?.dateReturn}</span>
+                            </p>`}
+                            <p>
+                                <span style="font-weight:bold;">Depart from: </span>
+                                <span>${input?.departFrom}</span>
+                            </p>
+                            ${
+                              input?.departFromReturn && 
+                              `<p>
+                                  <span style="font-weight:bold;">Depart from return: </span>
+                                  <span>${input?.departFromReturn}</span>
+                              </p>`
+                            }
                             <p>
                                 <span style="font-weight:bold;">Total amount: </span>
                                 <span>${input?.price} €</span>
@@ -837,7 +878,11 @@ export const EmailRouter = createTRPCRouter({
         extra: z.string(),
         information: z.string(),
         adults: z.number(),
-        infants: z.number(),
+        child_0_3: z.number(),
+        child_4_8: z.number(),
+        child_9_13: z.number(),
+        child_4_11: z.number(),
+        total_no_of_people: z.number(),
         bookingType: z.string(),
         time: z.string(),
         date: z.string(),
@@ -904,9 +949,28 @@ export const EmailRouter = createTRPCRouter({
                                 <span>${input?.adults}</span>
                             </p>
                             <p>
-                                <span style="font-weight:bold;">Infants: </span>
-                                <span>${input?.infants}</span>
+                                <span style="font-weight:bold;">Child (0-3): </span>
+                                <span>${input?.child_0_3}</span>
                             </p>
+                            ${
+                              input?.bookingType === "half_day"
+                                ? `
+                            <p>
+                                <span style="font-weight:bold;">Child (4-8): </span>
+                                <span>${input?.child_4_8}</span>
+                            </p>
+                            <p>
+                                <span style="font-weight:bold;">Child (9-13): </span>
+                                <span>${input?.child_9_13}</span>
+                            </p>
+                            `
+                                : `
+                            <p>
+                                <span style="font-weight:bold;">Child (4-11): </span>
+                                <span>${input?.child_4_11}</span>
+                            </p>                                
+                                `
+                            }
                             <p>
                                 <span style="font-weight:bold;">Booking Type: </span>
                                 <span>${input?.bookingType}</span>

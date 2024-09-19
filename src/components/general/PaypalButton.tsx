@@ -58,7 +58,7 @@ export const PayPalButton = ({
           variant: "destructive",
           description: "Something went wrong",
         });
-      }
+      } 
     }
   };
 
@@ -86,6 +86,7 @@ export const PayPalButton = ({
         total_no_of_people: 0,
         boat: undefined,
         mode: undefined,
+        
       }));
       setDisable(() => true);
       setHideForm(() => false);

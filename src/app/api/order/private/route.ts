@@ -61,14 +61,18 @@ export async function POST(req: Request) {
       guesthouse: formData.guesthouse ?? "none",
       date: bookingData.date ?? "none",
       adults: bookingData.adult ?? 0,
-      infants: bookingData.infants ?? 0,
+      child_0_3: bookingData.child_0_3 ?? 0,
+      child_4_8: bookingData.child_4_8 ?? 0,
+      child_9_13: bookingData.child_9_13 ?? 0,
+      child_4_11: bookingData.child_4_11 ?? 0,
+      total_no_of_people: bookingData.total_no_of_people ?? 0,
       bookingType: bookingData.daySlot ?? "none",
       time: bookingData.timeSlot ?? "none",
       price: bookingData.price + "",
     };
-    const totalNoOfPeople = bookingData.adult ?? 0 + bookingData.infants ?? 0;
+    const totalNoOfPeople = bookingData.total_no_of_people ?? 0;
 
-    const paypalId = await api.booking.createFishingBooking(object);
+    const paypalId = await api.booking.createPrivateBooking(object);
     if (totalNoOfPeople > 10) {
       await api.booking.addBookingData({
         paypalBoookingId: paypalId,
@@ -101,12 +105,12 @@ export async function POST(req: Request) {
           bookingData.daySlot === "full_day"
             ? bookingData.daySlot
             : (bookingData.timeSlot ?? "none"),
-        noOfPeople: bookingData.adult ?? 0 + bookingData.infants ?? 0,
+        noOfPeople: bookingData.total_no_of_people ?? 0,
         bookingType: "charter",
       });
     }
-    await api.email.buyerFishingEmail({ ...object, paypalId: orderId });
-    await api.email.sellerFishingEmail({ ...object, paypalId: orderId });
+    await api.email.buyerPrivateEmail({ ...object, paypalId: orderId });
+    await api.email.sellerPrivateEmail({ ...object, paypalId: orderId });
 
     return Response.json(order);
   } catch (error) {

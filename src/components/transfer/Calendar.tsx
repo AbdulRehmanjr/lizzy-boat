@@ -130,7 +130,7 @@ export const Calendar = () => {
   };
 
   return (
-    <div className="grid gap-4 p-6">
+    <div className="grid gap-4 px-6 pt-6">
       <div className="my-6 flex w-full items-center justify-between gap-4">
         <Button
           type="button"

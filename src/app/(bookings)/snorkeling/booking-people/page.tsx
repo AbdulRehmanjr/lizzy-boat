@@ -11,3 +11,4 @@ const BookingPeople = () => {
 };
 
 export default BookingPeople;
+ 

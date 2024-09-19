@@ -20,7 +20,7 @@ export const Calendar = () => {
   });
 
   const blockBookingsAccordingToBoats = api.booking.getBlockedDates.useQuery({
-    numberOfPeople: privateData.adult ?? 0 + privateData.infants ?? 0,
+    numberOfPeople: privateData.total_no_of_people ?? 0,
     bookingType: "charter",
     time: privateData.timeSlot ?? "",
   });
@@ -44,7 +44,7 @@ export const Calendar = () => {
   }, [currentDate]);
 
   const currentPrice = useMemo(() => {
-    const totalPeople = privateData.adult ?? 1;
+    const totalPeople = privateData.total_no_of_people ?? 1;
     switch (privateData.daySlot) {
       case "full_day":
         return totalPeople <= 4 ? 800 : (totalPeople - 4) * 40 + 800;
@@ -153,7 +153,7 @@ export const Calendar = () => {
   };
 
   return (
-    <div className="grid gap-4 p-6">
+    <div className="grid gap-4 px-6 pt-6">
       <div className="my-6 flex w-full items-center justify-between gap-4">
         <Button
           type="button"

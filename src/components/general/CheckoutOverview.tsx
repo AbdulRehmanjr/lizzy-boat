@@ -28,13 +28,43 @@ const CheckoutOverview = ({
           <span>Date:</span>
           <span>{dayjs(data?.date).format("DD-MM-YYYY")}</span>
         </p>
-        {}
+        {data?.date_return ? (
+          <p className="flex gap-2">
+            <span>Return date:</span>
+            <span>{data?.date_return}</span>
+          </p>
+        ) : null}
+        {data?.startTime ? (
+          <p className="flex gap-2">
+            <span>Start time:</span>
+            <span>{data?.startTime}</span>
+          </p>
+        ) : null}
+        {data?.endTime ? (
+          <p className="flex gap-2">
+            <span>End time (return):</span>
+            <span>{data?.endTime}</span>
+          </p>
+        ) : null}
         {data?.boatType ? (
           <p className="flex gap-2">
             <span>Boat type:</span>
             <span>{data?.boatType}</span>
           </p>
         ) : null}
+        {data?.depart_from ? (
+          <p className="flex gap-2">
+            <span>Depart from:</span>
+            <span>{data?.depart_from}</span>
+          </p>
+        ) : null}
+        {data?.depart_from_return ? (
+          <p className="flex gap-2">
+            <span>Depart from (return):</span>
+            <span>{data?.depart_from_return}</span>
+          </p>
+        ) : null}
+
         {data?.daySlot ? (
           <p className="flex gap-2">
             <span>Booking type:</span>

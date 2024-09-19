@@ -50,8 +50,12 @@ type PrivateBookingProps = {
   date: string | undefined;
   price: number;
   adult: number | undefined;
-  infants: number;
   boat: string;
+  child_0_3: number,
+  child_4_8: number,
+  child_9_13: number,
+  child_4_11: number,
+  total_no_of_people: number,
 };
 
 type SnorkelingBookingProps = {
@@ -104,6 +108,9 @@ type BookingProps = Partial<{
   extra?: string;
   guesthouse?: string;
   mode?: string;
+  date_return: string | undefined;
+  depart_from: string | undefined;
+  depart_from_return: string | undefined;
 }>;
 
 type SelectPeopleAge = {
