@@ -143,3 +143,11 @@ export function canMakeBooking(
 
 // const result = canMakeBooking(bookings, newBooking);
 // console.log(result);
+
+export const getTourName = (pathName: string) => {
+  if (pathName.includes("charter")) return "Charter";
+  if (pathName.includes("transfer")) return "Transfer";
+  if (pathName.includes("sunset")) return "Sunset";
+  if (pathName.includes("snorkeling")) return "Snorkeling";
+  if (pathName.includes("fishing")) return "Fishing";
+};

@@ -2,6 +2,8 @@
 
 import dayjs from "dayjs";
 import { PayPalButton } from "./PaypalButton";
+import { usePathname } from "next/navigation";
+import { getTourName } from "~/utils/funs";
 
 type Props = {
   state: BookingProps;
@@ -20,10 +22,12 @@ const CheckoutOverview = ({
   hideForm,
   setHideForm,
 }: Props) => {
+  const pathName = usePathname();
+  console.log(pathName);
   return (
     <div className="text-yellow flex flex-col gap-4">
       <h1 className="font-ibm text-4xl">Booking overview</h1>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 text-black/70">
         <p className="flex gap-2">
           <span>Date:</span>
           <span>{dayjs(data?.date).format("DD-MM-YYYY")}</span>
@@ -34,6 +38,10 @@ const CheckoutOverview = ({
             <span>{data?.date_return}</span>
           </p>
         ) : null}
+        <p className="flex gap-2">
+          <span>Tour:</span>
+          <span>{getTourName(pathName)}</span>
+        </p>
         {data?.startTime ? (
           <p className="flex gap-2">
             <span>Start time:</span>
@@ -74,7 +82,14 @@ const CheckoutOverview = ({
         {data?.daySlot === "half_day" && data?.timeSlot ? (
           <p className="flex gap-2">
             <span>Booking Time:</span>
-            <span>{data?.timeSlot}</span>
+            <span>
+              {data?.timeSlot}{" "}
+              ({data?.timeSlot === "morning"
+                ? pathName.includes("fishing")
+                  ? "07:30 AM"
+                  : "10:30 AM"
+                : "13:30 "})
+            </span>
           </p>
         ) : null}
         {data?.adult ? (
@@ -119,9 +134,14 @@ const CheckoutOverview = ({
             <span>{data?.mode}</span>
           </p>
         ) : null}
-        <p className="flex gap-2 border-y-2 py-3 font-extrabold">
-          <span>Price:</span>
-          <span>{data?.price} €</span>
+        <p className="flex items-center justify-between gap-2 border-y-2 py-3 font-extrabold">
+          <span className="flex max-w-[50%] flex-col">
+            <span>Total Price:</span>
+            <span className="text-sm font-normal">
+              includes taxes, island fees and port fee
+            </span>
+          </span>
+          <span className="text-3xl">{data?.price} €</span>
         </p>
         {hideForm && (
           <PayPalButton
