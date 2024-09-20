@@ -7,6 +7,7 @@ import Header from "~/components/general/Header";
 import Providers from "./provider";
 
 import { Toaster } from "~/components/ui/toaster";
+import BreadCrumbs from "~/components/BreadCrumbs";
 
 const ibm_plex_mono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body className="main-bg grid bg-cover bg-no-repeat">
         <Providers>
           <Header />
+          <BreadCrumbs />
           <main className="flex min-h-[calc(100vh_-_200px)] items-center justify-center text-[#1f788b]">
             {children}
           </main>
